@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TodoItemInterface } from "../../models/todo";
 import { ModalTodo } from "../modalTodo";
 import PrimaryButtonComponent from "../primaryButton";
 import TodoItemComponent from "../todoItem";
+
+import { listTodo, saveTodo, updateStatusTodo, updateTodo } from "../../services/todoCrud";
 
 import "./style.css";
 
@@ -18,6 +20,12 @@ export default function TodoListComponent() {
   const [selectedOptionMenu, setSelectedOptionMenu] = useState("todo");
   const [showTodoModal, setShowTodoModal] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState<TodoItemInterface>(emptyTodo);
+  const [list, setList] = useState<Array<TodoItemInterface>>([]);
+
+  useEffect(() => {
+    const { ok, data } = listTodo({ status: "todo" });
+    if(ok) setList(data);
+  }, []);
 
   const handleOpenModalTodo = () => {
     setShowTodoModal(true);
@@ -28,10 +36,6 @@ export default function TodoListComponent() {
     setSelectedTodo(emptyTodo);
   };
 
-  const handleSaveTodo = (values: any) => {
-    console.log("!", selectedTodo?.id, values);
-  };
-
   const handleEditTodo = (item: any) => {
     setSelectedTodo(item);
     handleOpenModalTodo();
@@ -39,20 +43,37 @@ export default function TodoListComponent() {
 
   const handleSelectOptionMenu = (selected: "done" | "todo" | "all") => {
     setSelectedOptionMenu(selected);
+
+    const status = selected !== "all" ? selected : undefined;
+
+    const { ok, data } = listTodo({ status });
+    
+    if(ok) setList(data);
   };
 
-  const todoList: Array<any> = [];
+  const handleSaveTodo = (values: TodoItemInterface) => {
+    values.date = values.date || "";
+    values.time = values.time || "";
+    
+    if(values.id) {
+      updateTodo(values);
+    }
+    else {
+      saveTodo(values);
+    }
 
-  for (let i = 1; i <= 22; i += 1) {
-    todoList.push({
-      id: i + "",
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis consequatur explicabo, ut, dolores, id est tenetur alias dolor incidunt dolorum quae qui aperiam molestias deserunt mollitia aspernatur quos natus modi.",
-      date: "2021/11/01",
-      time: "12:30",
-      done: false,
-      color: "FFC6FF",
-    });
+    handleCloseModalTodo();
+  };
+
+  const handleUpdateStatusTodo = (id: string, status: boolean) => {
+    const { ok, data} = updateStatusTodo(id, status);
+    
+    if(ok) {
+      const index = list.findIndex((item) => item.id === id);
+      const tempList = list;
+      tempList[index] = { ...tempList[index], done: status };
+      setList(tempList);
+    }
   }
 
   return (
@@ -86,11 +107,12 @@ export default function TodoListComponent() {
       </div>
 
       <div className="list">
-        {todoList.map((item: TodoItemInterface) => (
+        {list.length && list.map((item: TodoItemInterface) => (
           <TodoItemComponent
             {...item}
             key={item.id}
             onEditTodo={() => handleEditTodo(item)}
+            onChangeStatusTodo={() => handleUpdateStatusTodo(item.id!, !item.done)}
           />
         ))}
       </div>

@@ -4,6 +4,7 @@ import { TodoItemInterface } from "../../models/todo";
 import {
   InputTextAreaComponent,
   InputMaskComponent,
+  InputTextComponent,
 } from "../input";
 
 import "./style.css";
@@ -27,12 +28,13 @@ export const ModalTodo = (props: Props) => {
     }
     else {
       form.setFieldsValue({
+        id: null,
         color: null,
         description: null,
         date: "",
         time: "",
       });
-    }
+    }    
   }, [props.visible]);
 
   return (
@@ -49,6 +51,10 @@ export const ModalTodo = (props: Props) => {
         form={form}
         className="modal-todo-component-content"
       >
+        <Form.Item name="id" style={{ display: "none" }}>
+          <InputTextComponent />
+        </Form.Item>
+
         <Form.Item
           name="color"
           rules={[{ required: true, message: "Escolha uma cor" }]}

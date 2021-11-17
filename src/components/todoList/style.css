@@ -49,10 +49,9 @@ span.menu-selected {
 .todo-list-component-content .list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 8px;
   width: 100%;
-  height: calc(100vh - 200px);
+  max-height: calc(100vh - 200px);
   overflow: auto;
 }
 

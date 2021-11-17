@@ -11,6 +11,16 @@ import InputMask, { Props as InputMaskProps } from "react-input-mask";
 
 const { TextArea } = Input;
 
+export function InputTextComponent(props: InputProps) {
+  return (
+    <div className="input-text-area-component-content">
+      <Input size="large" allowClear={true} {...props}>
+        {props.children}
+      </Input>
+    </div>
+  );
+}
+
 export function InputTextAreaComponent(props: TextAreaProps) {
   return (
     <div className="input-text-area-component-content">
