@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/welingtonfidelis/todolist-v2/static/css/main.bf480d2e.chunk.css",
+    "main.js": "/welingtonfidelis/todolist-v2/static/js/main.ccba307b.chunk.js",
+    "main.js.map": "/welingtonfidelis/todolist-v2/static/js/main.ccba307b.chunk.js.map",
+    "runtime-main.js": "/welingtonfidelis/todolist-v2/static/js/runtime-main.49b620ea.js",
+    "runtime-main.js.map": "/welingtonfidelis/todolist-v2/static/js/runtime-main.49b620ea.js.map",
+    "static/css/2.a95be28f.chunk.css": "/welingtonfidelis/todolist-v2/static/css/2.a95be28f.chunk.css",
+    "static/js/2.eceed0b5.chunk.js": "/welingtonfidelis/todolist-v2/static/js/2.eceed0b5.chunk.js",
+    "static/js/2.eceed0b5.chunk.js.map": "/welingtonfidelis/todolist-v2/static/js/2.eceed0b5.chunk.js.map",
+    "index.html": "/welingtonfidelis/todolist-v2/index.html",
+    "static/css/2.a95be28f.chunk.css.map": "/welingtonfidelis/todolist-v2/static/css/2.a95be28f.chunk.css.map",
+    "static/css/main.bf480d2e.chunk.css.map": "/welingtonfidelis/todolist-v2/static/css/main.bf480d2e.chunk.css.map",
+    "static/js/2.eceed0b5.chunk.js.LICENSE.txt": "/welingtonfidelis/todolist-v2/static/js/2.eceed0b5.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.49b620ea.js",
+    "static/css/2.a95be28f.chunk.css",
+    "static/js/2.eceed0b5.chunk.js",
+    "static/css/main.bf480d2e.chunk.css",
+    "static/js/main.ccba307b.chunk.js"
+  ]
+}
