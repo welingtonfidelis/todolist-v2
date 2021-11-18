@@ -1,12 +1,27 @@
 import { useEffect, useState } from "react";
-import { TodoItemInterface } from "../../models/todo";
+import { Empty } from "antd";
+
 import { ModalTodo } from "../modalTodo";
 import PrimaryButtonComponent from "../primaryButton";
 import TodoItemComponent from "../todoItem";
 
-import { listTodo, saveTodo, updateStatusTodo, updateTodo } from "../../services/todoCrud";
+import {
+  listTodo,
+  saveTodo,
+  updateStatusTodo,
+  updateTodo,
+} from "../../services/todoCrud";
 
 import "./style.css";
+import { useSelector, useDispatch } from "react-redux";
+import { TodoItemInterface, TodoListInterface } from "../../store/todo/model";
+import {
+  todoAddItem,
+  todoRemoveItem,
+  todoUpdateItem,
+  todoUpdateList,
+  todoUpdateStatusItem,
+} from "../../store/todo/actions";
 
 const emptyTodo = {
   color: "",
@@ -19,12 +34,18 @@ const emptyTodo = {
 export default function TodoListComponent() {
   const [selectedOptionMenu, setSelectedOptionMenu] = useState("todo");
   const [showTodoModal, setShowTodoModal] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState<TodoItemInterface>(emptyTodo);
-  const [list, setList] = useState<Array<TodoItemInterface>>([]);
+  const [selectedTodo, setSelectedTodo] =
+    useState<TodoItemInterface>(emptyTodo);
+
+  const dispatch = useDispatch();
+
+  const todoOnReducer = useSelector(
+    (state: { todo: TodoListInterface }) => state.todo
+  );
 
   useEffect(() => {
     const { ok, data } = listTodo({ status: "todo" });
-    if(ok) setList(data);
+    if (ok) dispatch(todoUpdateList(data));
   }, []);
 
   const handleOpenModalTodo = () => {
@@ -36,7 +57,7 @@ export default function TodoListComponent() {
     setSelectedTodo(emptyTodo);
   };
 
-  const handleEditTodo = (item: any) => {
+  const handleEditTodo = (item: TodoItemInterface) => {
     setSelectedTodo(item);
     handleOpenModalTodo();
   };
@@ -47,34 +68,41 @@ export default function TodoListComponent() {
     const status = selected !== "all" ? selected : undefined;
 
     const { ok, data } = listTodo({ status });
-    
-    if(ok) setList(data);
+
+    if (ok) dispatch(todoUpdateList(data));
   };
 
   const handleSaveTodo = (values: TodoItemInterface) => {
     values.date = values.date || "";
     values.time = values.time || "";
-    
-    if(values.id) {
-      updateTodo(values);
-    }
-    else {
-      saveTodo(values);
+
+    if (values.id) {
+      const { ok, data } = updateTodo(values);
+
+      if (ok) dispatch(todoUpdateItem(data));
+    } else {
+      const { ok, data } = saveTodo(values);
+
+      if (ok) dispatch(todoAddItem(data));
     }
 
     handleCloseModalTodo();
   };
 
   const handleUpdateStatusTodo = (id: string, status: boolean) => {
-    const { ok, data} = updateStatusTodo(id, status);
-    
-    if(ok) {
-      const index = list.findIndex((item) => item.id === id);
-      const tempList = list;
-      tempList[index] = { ...tempList[index], done: status };
-      setList(tempList);
+    const { ok, data } = updateStatusTodo(id, status);
+
+    if (ok) {
+      dispatch(todoUpdateStatusItem({ id, status }));
+
+      if (
+        (status && !["done", "all"].includes(selectedOptionMenu)) ||
+        (!status && ["done"].includes(selectedOptionMenu))
+      ) {
+        dispatch(todoRemoveItem({ id }));
+      }
     }
-  }
+  };
 
   return (
     <div className="todo-list-component-content">
@@ -107,14 +135,24 @@ export default function TodoListComponent() {
       </div>
 
       <div className="list">
-        {list.length && list.map((item: TodoItemInterface) => (
-          <TodoItemComponent
-            {...item}
-            key={item.id}
-            onEditTodo={() => handleEditTodo(item)}
-            onChangeStatusTodo={() => handleUpdateStatusTodo(item.id!, !item.done)}
+        {todoOnReducer.list.length ? (
+          todoOnReducer.list.map((item: TodoItemInterface) => (
+            <TodoItemComponent
+              {...item}
+              key={item.id}
+              onEditTodo={() => handleEditTodo(item)}
+              onChangeStatusTodo={() =>
+                handleUpdateStatusTodo(item.id!, !item.done)
+              }
+            />
+          ))
+        ) : (
+          <Empty
+            description="Lista vazia"
+            className="list-empty"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
-        ))}
+        )}
       </div>
 
       <ModalTodo

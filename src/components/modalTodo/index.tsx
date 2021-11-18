@@ -1,6 +1,7 @@
 import { Modal, Form, Radio } from "antd";
 import { useEffect } from "react";
-import { TodoItemInterface } from "../../models/todo";
+import { TodoItemInterface } from "../../store/todo/model";
+
 import {
   InputTextAreaComponent,
   InputMaskComponent,
@@ -9,7 +10,7 @@ import {
 
 import "./style.css";
 
-interface Props extends TodoItemInterface{
+interface Props extends TodoItemInterface {
   visible: boolean;
   title: string;
 
@@ -17,25 +18,26 @@ interface Props extends TodoItemInterface{
   onCancel: () => void;
 }
 
+const initialFormvalues = {
+  id: null,
+  color: null,
+  description: null,
+  date: "",
+  time: "",
+};
+
 export const ModalTodo = (props: Props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (props.visible) {
-      form.setFieldsValue({
-        ...props,
-      });
-    }
-    else {
-      form.setFieldsValue({
-        id: null,
-        color: null,
-        description: null,
-        date: "",
-        time: "",
-      });
-    }    
+    if (props.visible) setFormValues(props);
   }, [props.visible]);
+
+  const setFormValues = (todo: TodoItemInterface) => {
+    form.setFieldsValue({
+      ...todo,
+    });
+  };
 
   return (
     <Modal
@@ -44,12 +46,13 @@ export const ModalTodo = (props: Props) => {
       onCancel={props.onCancel}
       okText="Salvar"
       cancelText="Cancelar"
-      title={ props.id ? "Editar tarefa" : "Nova tarefa" }
+      title={props.id ? "Editar tarefa" : "Nova tarefa"}
     >
       <Form
         onFinish={props.onOk}
         form={form}
         className="modal-todo-component-content"
+        initialValues={initialFormvalues}
       >
         <Form.Item name="id" style={{ display: "none" }}>
           <InputTextComponent />
@@ -61,11 +64,11 @@ export const ModalTodo = (props: Props) => {
           className="color-palette"
         >
           <Radio.Group>
-            <Radio value="F4A261" style={{background: "#F4A261"}} />
-            <Radio value="FFC6FF" style={{background: "#FFC6FF"}} />
-            <Radio value="FFADAD" style={{background: "#FFADAD"}} />
-            <Radio value="CAFFBF" style={{background: "#CAFFBF"}} />
-            <Radio value="A0C4FF" style={{background: "#A0C4FF"}} />
+            <Radio value="F4A261" style={{ background: "#F4A261" }} />
+            <Radio value="FFC6FF" style={{ background: "#FFC6FF" }} />
+            <Radio value="FFADAD" style={{ background: "#FFADAD" }} />
+            <Radio value="CAFFBF" style={{ background: "#CAFFBF" }} />
+            <Radio value="A0C4FF" style={{ background: "#A0C4FF" }} />
           </Radio.Group>
         </Form.Item>
 

@@ -1,4 +1,5 @@
-import { TodoItemInterface } from "../models/todo";
+import { TodoItemInterface } from "../store/todo/model";
+
 
 const todoList: Array<TodoItemInterface> = [];
 

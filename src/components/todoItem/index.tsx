@@ -5,7 +5,7 @@ import {
   FaClock,
   FaCheckCircle,
 } from "react-icons/fa";
-import { TodoItemInterface } from "../../models/todo";
+import { TodoItemInterface } from "../../store/todo/model";
 
 import "./style.css";
 
