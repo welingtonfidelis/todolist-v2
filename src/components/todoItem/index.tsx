@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   FaPen,
   FaRegCircle,
@@ -15,6 +16,14 @@ interface ItemPropsIterface extends TodoItemInterface {
 }
 
 export default function TodoItemComponent(props: ItemPropsIterface) {
+  let expiredDateClass = "";
+
+  if (props.date) {
+    const todoDate = moment(props.date);
+    const today = moment();
+
+    if(today.isAfter(todoDate, "date")) expiredDateClass = "date-expired";
+  }
   return (
     <div
       className="todo-item-component-content"
@@ -24,13 +33,21 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
         <div className="description">{props.description}</div>
 
         <div className="date-time">
-          <div className="date">
-            <FaRegCalendarAlt />
-            <span>{props.date}</span>
+          <div className={`date ${expiredDateClass}`}>
+            {props.date && (
+              <>
+                <FaRegCalendarAlt />
+                <span>{moment(new Date(props.date)).utc().format("DD/MM/YYYY")}</span>
+              </>
+            )}
           </div>
           <div className="time">
-            <FaClock />
-            <span>{props.time}</span>
+            {props.time && (
+              <>
+                <FaClock />
+                <span>{moment(new Date(props.time)).utc().format("HH:mm")}</span>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -1,11 +1,13 @@
 import { Modal, Form, Radio } from "antd";
+import moment from "moment";
 import { useEffect } from "react";
 import { TodoItemInterface } from "../../store/todo/model";
 
 import {
   InputTextAreaComponent,
-  InputMaskComponent,
   InputTextComponent,
+  DatePickerComponent,
+  TimePickerComponent,
 } from "../input";
 
 import "./style.css";
@@ -30,13 +32,19 @@ export const ModalTodo = (props: Props) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    if (props.visible) setFormValues(props);
+    if (props.visible) setFormValues();
   }, [props.visible]);
 
-  const setFormValues = (todo: TodoItemInterface) => {
-    form.setFieldsValue({
-      ...todo,
-    });
+  const setFormValues = () => {
+    if (props.id) {
+      form.setFieldsValue({
+        ...props,
+        date: props.date && props.date.length ? moment(props.date) : null,
+        time: props.time && props.time.length ? moment(props.time) : null,
+      });
+    } else {
+      form.setFieldsValue({ ...initialFormvalues });
+    }
   };
 
   return (
@@ -52,9 +60,12 @@ export const ModalTodo = (props: Props) => {
         onFinish={props.onOk}
         form={form}
         className="modal-todo-component-content"
-        initialValues={initialFormvalues}
       >
         <Form.Item name="id" style={{ display: "none" }}>
+          <InputTextComponent />
+        </Form.Item>
+
+        <Form.Item name="done" style={{ display: "none" }}>
           <InputTextComponent />
         </Form.Item>
 
@@ -87,10 +98,10 @@ export const ModalTodo = (props: Props) => {
 
         <div className="input-date-time">
           <Form.Item name="date">
-            <InputMaskComponent mask="99/99/9999" placeholder="Data" />
+            <DatePickerComponent format="DD/MM/YYYY"/>
           </Form.Item>
           <Form.Item name="time">
-            <InputMaskComponent mask="99:99" placeholder="Horário" />
+            <TimePickerComponent format="HH:mm"/>
           </Form.Item>
         </div>
       </Form>

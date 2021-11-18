@@ -22,6 +22,7 @@ import {
   todoUpdateList,
   todoUpdateStatusItem,
 } from "../../store/todo/actions";
+import moment from "moment";
 
 const emptyTodo = {
   color: "",
@@ -73,8 +74,9 @@ export default function TodoListComponent() {
   };
 
   const handleSaveTodo = (values: TodoItemInterface) => {
-    values.date = values.date || "";
-    values.time = values.time || "";
+    values.date = values.date ? moment(new Date(values.date)).utc().format() : "";
+    values.time = values.time ? moment(new Date(values.time)).utc().format() : "";
+    values.done = values.done || false;
 
     if (values.id) {
       const { ok, data } = updateTodo(values);
@@ -89,8 +91,8 @@ export default function TodoListComponent() {
     handleCloseModalTodo();
   };
 
-  const handleUpdateStatusTodo = (id: string, status: boolean) => {
-    const { ok, data } = updateStatusTodo(id, status);
+  const handleUpdateStatusTodo = (id: string, status: boolean) => {   
+    const { ok } = updateStatusTodo(id, status);
 
     if (ok) {
       dispatch(todoUpdateStatusItem({ id, status }));

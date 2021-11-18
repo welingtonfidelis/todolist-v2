@@ -1,19 +1,7 @@
+import { randomBytes } from "crypto";
+
+import { Notification } from "../components/notification";
 import { TodoItemInterface } from "../store/todo/model";
-
-
-const todoList: Array<TodoItemInterface> = [];
-
-for (let i = 1; i <= 2; i += 1) {
-  todoList.push({
-    id: i + "",
-    description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis consequatur explicabo, ut, dolores, id est tenetur alias dolor incidunt dolorum quae qui aperiam molestias deserunt mollitia aspernatur quos natus modi.",
-    date: "2021/11/01",
-    time: "12:30",
-    done: false,
-    color: "FFC6FF",
-  });
-}
 
 interface ResponseInterface {
   ok: boolean;
@@ -26,59 +14,110 @@ interface ListFilter {
 
 export const listTodo = (filter: ListFilter): ResponseInterface => {
   try {
-    let list = todoList;
+    const stored = localStorage.getItem("todo@list#v2");//todoList;
+    let list = stored ? JSON.parse(stored) : [];
 
-    if(filter.status) {
-      list = list.filter(item => item.done === (filter.status === "done"));
+    if (list.length && filter.status) {
+      list = list.filter((item: TodoItemInterface) => item.done === (filter.status === "done"));
     }
 
-    return { ok:  true, data: list }
-    
+    return { ok: true, data: list };
   } catch (error) {
+    Notification({
+      type: "error",
+      description: "Lista de tarefas",
+      message:
+        "Houve um erro ao tentar trazer a lista de tarefas. Por favor, tente novamente.",
+    });
+
     console.log("SAVE NEW TODO ERROR", error);
-    
+
     return { ok: false };
   }
-}
+};
 
 export const saveTodo = (todo: TodoItemInterface): ResponseInterface => {
   try {
-    todo.id = todoList.length + 1 + "";
+    todo.id = randomBytes(8).toString("hex");
 
-    todoList.push(todo);
-    
-    return { ok:  true, data: todo }
+    const stored = localStorage.getItem("todo@list#v2");
+    const todoStored: Array<TodoItemInterface> = stored ? JSON.parse(stored) : [];
+
+    todoStored.push(todo);
+    localStorage.setItem("todo@list#v2", JSON.stringify(todoStored));
+
+    return { ok: true, data: todo };
   } catch (error) {
+    Notification({
+      type: "error",
+      description: "Salvar tarefa",
+      message:
+        "Houve um erro ao tentar criar a tarefa. Por favor, tente novamente.",
+    });
+
     console.log("SAVE NEW TODO ERROR", error);
-    
+
     return { ok: false };
   }
-}
+};
 
 export const updateTodo = (todo: TodoItemInterface): ResponseInterface => {
   try {
-    const index = todoList.findIndex((item) => item.id === todo.id);
-
-    todoList[index] = todo;
+    let todoStored: Array<TodoItemInterface> = JSON.parse(localStorage.getItem("todo@list#v2")!);
     
-    return { ok:  true, data: todo }
+    todoStored = todoStored.map(item => {
+      if(item.id === todo.id) item = todo;
+
+      return item;
+    });
+
+    localStorage.setItem("todo@list#v2", JSON.stringify(todoStored));
+
+    return { ok: true, data: todo };
   } catch (error) {
+    Notification({
+      type: "error",
+      description: "Salvar tarefa",
+      message:
+        "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
+    });
+
     console.log("UPDATE TODO ERROR", error);
-    
+
     return { ok: false };
   }
-}
+};
 
-export const updateStatusTodo = (id: string, status: boolean): ResponseInterface => {
+export const updateStatusTodo = (
+  id: string,
+  status: boolean
+): ResponseInterface => {
   try {
-    const index = todoList.findIndex((item) => item.id === id);
+    let todoStored: Array<TodoItemInterface> = JSON.parse(localStorage.getItem("todo@list#v2")!);
+    
+    let todo;
+    todoStored = todoStored.map(item => {
+      if(item.id === id) {
+        item.done = status;
+        todo = item;
+      }
 
-    todoList[index] = {...todoList[index], done: status};
-    
-    return { ok:  true, data: todoList[index] }
+      return item;
+    });
+
+    localStorage.setItem("todo@list#v2", JSON.stringify(todoStored));
+
+    return { ok: true, data: todo };
   } catch (error) {
+    Notification({
+      type: "error",
+      description: "Salvar tarefa",
+      message:
+        "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
+    });
+
     console.log("UPDATE TODO STATUS ERROR", error);
-    
+
     return { ok: false };
   }
-}
+};
