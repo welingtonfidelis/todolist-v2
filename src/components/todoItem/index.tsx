@@ -1,4 +1,5 @@
 import moment from "moment";
+import { useCallback } from "react";
 import {
   FaPen,
   FaRegCircle,
@@ -6,11 +7,14 @@ import {
   FaClock,
   FaCheckCircle,
 } from "react-icons/fa";
-import { TodoItemInterface } from "../../store/todo/model";
+import { RiRestartFill } from "react-icons/ri";
+
+import { TodoInterface } from "../../domains/todo";
+
 
 import "./style.css";
 
-interface ItemPropsIterface extends TodoItemInterface {
+interface ItemPropsIterface extends TodoInterface {
   onEditTodo: () => void;
   onChangeStatusTodo: () => void;
 }
@@ -24,6 +28,21 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
 
     if(today.isAfter(todoDate, "date")) expiredDateClass = "date-expired";
   }
+
+  const handleChangeStatus = useCallback((status: string) => {
+  console.log("🚀 ~ file: index.tsx ~ line 33 ~ handleChangeStatus ~ status", status)
+
+  }, []);
+
+  const StatusIcon = useCallback(() => {
+    let icon = <FaCheckCircle onClick={() => {handleChangeStatus('todo')}} />;
+
+    if (props.status === 'doing') icon = <RiRestartFill onClick={() => {handleChangeStatus('done')}} />;
+    else if (props.status === 'todo') icon = <FaRegCircle onClick={() => {handleChangeStatus('doing')}} />;
+
+    return icon;
+  }, []);
+
   return (
     <div
       className="todo-item-component-content"
@@ -54,11 +73,13 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
 
       <div className="col-2">
         <FaPen onClick={props.onEditTodo} />
-        {props.done ? (
+        <StatusIcon />
+    
+        {/* {props.done ? (
           <FaCheckCircle onClick={props.onChangeStatusTodo} />
         ) : (
           <FaRegCircle onClick={props.onChangeStatusTodo} />
-        )}
+        )} */}
       </div>
     </div>
   );

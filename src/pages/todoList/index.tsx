@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Empty } from "antd";
 
 import { ModalTodo } from "../../components/modalTodo";
@@ -10,153 +10,87 @@ import {
   saveTodo,
   updateStatusTodo,
   updateTodo,
-} from "../../services/todoCrud";
+} from "../../services/requests";
+
+import { useTranslation } from "react-i18next";
+import { TodoInterface, TodoStatusEnum } from "../../domains/todo";
 
 import "./style.css";
-import { useSelector, useDispatch } from "react-redux";
-import { TodoItemInterface, TodoListInterface } from "../../store/todo/model";
-import {
-  todoAddItem,
-  todoRemoveItem,
-  todoUpdateItem,
-  todoUpdateList,
-  todoUpdateStatusItem,
-} from "../../store/todo/actions";
-import moment from "moment";
-import { useTranslation } from "react-i18next";
 
-const emptyTodo = {
-  color: "",
-  description: "",
-  date: "",
-  time: "",
-  done: false,
-};
+interface TodoModalProps {
+  todoId: number | null;
+  visible: boolean;
+}
 
 export default function TodoListPage() {
   const { t } = useTranslation();
 
-  const [selectedOptionMenu, setSelectedOptionMenu] = useState("doing");
-  const [showTodoModal, setShowTodoModal] = useState(false);
-  const [selectedTodo, setSelectedTodo] =
-    useState<TodoItemInterface>(emptyTodo);
+  const [selectedOptionMenu, setSelectedOptionMenu] = useState<TodoStatusEnum>(TodoStatusEnum.DOING);
+  const [todoModalProps, setTodoModalProps] = useState<TodoModalProps>({visible: false, todoId: null});
+  const [todoListData, setTodoListData] = useState<TodoInterface[]>([]);
 
-  const dispatch = useDispatch();
-
-  const todoOnReducer = useSelector(
-    (state: { todo: TodoListInterface }) => state.todo
-  );
+  const getTodoList = useCallback(async (status: TodoStatusEnum) => {
+    const { ok, data } = await listTodo({ status });
+    
+    if(ok) setTodoListData(data || []);
+  }, []);
 
   useEffect(() => {
-    const { ok, data } = listTodo({ status: "todo" });
+    getTodoList(selectedOptionMenu);
+  }, [selectedOptionMenu]);
 
-    if (ok) dispatch(todoUpdateList(data));
-  }, [dispatch]);
-
-  const handleOpenModalTodo = () => {
-    setShowTodoModal(true);
+  const handleChangeModalTodoProps = (visible: boolean, todoId: number | null = null) => {
+    setTodoModalProps({
+        visible,
+        todoId
+      });
   };
 
-  const handleCloseModalTodo = () => {
-    setShowTodoModal(false);
-    setSelectedTodo(emptyTodo);
-  };
-
-  const handleEditTodo = (item: TodoItemInterface) => {
-    setSelectedTodo(item);
-    handleOpenModalTodo();
-  };
-
-  const handleSelectOptionMenu = (selected: "done" | "todo" | "doing") => {
-    setSelectedOptionMenu(selected);
-    console.log(
-      "🚀 ~ file: index.tsx ~ line 72 ~ handleSelectOptionMenu ~ selected",
-      selected
-    );
-
-    // const status = selected !== "all" ? selected : undefined;
-
-    // const { ok, data } = listTodo({ status });
-
-    // if (ok) dispatch(todoUpdateList(data));
-  };
-
-  const handleSaveTodo = (values: TodoItemInterface) => {
-    values.date = values.date
-      ? moment(new Date(values.date)).utc().format()
-      : "";
-    values.time = values.time
-      ? moment(new Date(values.time)).utc().format()
-      : "";
-    values.done = values.done || false;
-
-    if (values.id) {
-      const { ok, data } = updateTodo(values);
-
-      if (ok) dispatch(todoUpdateItem(data));
-    } else {
-      const { ok, data } = saveTodo(values);
-
-      if (ok) dispatch(todoAddItem(data));
-    }
-
-    handleCloseModalTodo();
-  };
-
-  const handleUpdateStatusTodo = (id: string, status: boolean) => {
-    const { ok } = updateStatusTodo(id, status);
-
-    if (ok) {
-      dispatch(todoUpdateStatusItem({ id, status }));
-
-      if (
-        (status && !["done", "all"].includes(selectedOptionMenu)) ||
-        (!status && ["done"].includes(selectedOptionMenu))
-      ) {
-        dispatch(todoRemoveItem({ id }));
-      }
-    }
+  const handleSaveTodo = () => {
+    handleChangeModalTodoProps(false);
+    getTodoList(selectedOptionMenu);
   };
 
   return (
     <div className="todo-list-component-content">
       <div className="new-todo-content">
         <span>{t(`pages.todo_list.page_title_${selectedOptionMenu}`)}</span>
-        <PrimaryButtonComponent onClick={handleOpenModalTodo}>
+        <PrimaryButtonComponent onClick={() => handleChangeModalTodoProps(true)}>
           {t('pages.todo_list.button_new_task')}
         </PrimaryButtonComponent>
       </div>
 
       <div className="menu">
         <span
-          className={selectedOptionMenu === "done" ? "menu-selected" : ""}
-          onClick={() => handleSelectOptionMenu("done")}
+          className={selectedOptionMenu === TodoStatusEnum.DONE ? "menu-selected" : ""}
+          onClick={() => setSelectedOptionMenu(TodoStatusEnum.DONE)}
         >
           {t("pages.todo_list.tab_option_done")}
         </span>
         <span
-          className={selectedOptionMenu === "doing" ? "menu-selected" : ""}
-          onClick={() => handleSelectOptionMenu("doing")}
+          className={selectedOptionMenu === TodoStatusEnum.DOING ? "menu-selected" : ""}
+          onClick={() => setSelectedOptionMenu(TodoStatusEnum.DOING)}
         >
           {t("pages.todo_list.tab_option_doing")}
         </span>
         <span
-          className={selectedOptionMenu === "todo" ? "menu-selected" : ""}
-          onClick={() => handleSelectOptionMenu("todo")}
+          className={selectedOptionMenu === TodoStatusEnum.TODO ? "menu-selected" : ""}
+          onClick={() => setSelectedOptionMenu(TodoStatusEnum.TODO)}
         >
           {t("pages.todo_list.tab_option_todo")}
         </span>
       </div>
 
-      {/* <div className="list">
-        {todoOnReducer.list.length ? (
-          todoOnReducer.list.map((item: TodoItemInterface) => (
+      <div className="list">
+        {todoListData.length ? (
+          todoListData.map((item: TodoInterface) => (
             <TodoItemComponent
               {...item}
               key={item.id}
-              onEditTodo={() => handleEditTodo(item)}
+              onEditTodo={() => handleChangeModalTodoProps(true, item.id)}
               onChangeStatusTodo={() =>
-                handleUpdateStatusTodo(item.id!, !item.done)
+                console.log('status change')
+                
               }
             />
           ))
@@ -167,13 +101,12 @@ export default function TodoListPage() {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}
-      </div> */}
+      </div>
 
       <ModalTodo
-        visible={showTodoModal}
         onOk={handleSaveTodo}
-        onCancel={handleCloseModalTodo}
-        {...selectedTodo}
+        onCancel={() => handleChangeModalTodoProps(false)}
+        {...todoModalProps}
       />
     </div>
   );

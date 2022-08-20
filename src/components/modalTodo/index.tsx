@@ -2,7 +2,8 @@ import { Modal, Form, Radio } from "antd";
 import moment from "moment";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { TodoItemInterface } from "../../store/todo/model";
+
+import { saveTodo } from "../../services/requests";
 
 import {
   InputTextAreaComponent,
@@ -10,13 +11,15 @@ import {
   DatePickerComponent,
   TimePickerComponent,
 } from "../input";
+import { Notification } from "../notification";
 
 import "./style.css";
 
-interface Props extends TodoItemInterface {
+interface Props {
+  todoId: number | null;
   visible: boolean;
 
-  onOk: (item: any) => void;
+  onOk: () => void;
   onCancel: () => void;
 }
 
@@ -28,35 +31,71 @@ const initialFormvalues = {
   time: "",
 };
 
+interface FormProps {
+  color: string;
+  description: string;
+  date?: string;
+  time?: string;
+  status: "done" | "doing" | "todo";
+}
+
 export const ModalTodo = (props: Props) => {
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<FormProps>();
 
-  const setFormValues = useCallback(() => {
-    if (props.id) {
-      form.setFieldsValue({
-        ...props,
-        date: props.date && props.date.length ? moment(props.date) : null,
-        time: props.time && props.time.length ? moment(props.time) : null,
-      });
-    } else {
-      form.setFieldsValue({ ...initialFormvalues });
-    }
-  }, [form, props]);
+  // const setFormValues = useCallback(() => {
+  //   if (props.id) {
+  //     form.setFieldsValue({
+  //       ...props,
+  //       date: props.date && props.date.length ? moment(props.date) : null,
+  //       time: props.time && props.time.length ? moment(props.time) : null,
+  //     });
+  //   } else {
+  //     form.setFieldsValue({ ...initialFormvalues });
+  //   }
+  // }, [form, props]);
 
   useEffect(() => {
-    if (props.visible) setFormValues();
-  }, [props.visible, setFormValues]);
+    if (!props.visible) form.resetFields();
+    //setFormValues();
+  }, [props.visible]);
+
+  const handleSave = useCallback(async () => {
+    const formData = await form.validateFields();
+    try {
+      
+      
+      formData.date = formData.date
+      ? moment(new Date(formData.date)).utc().format()
+      : "";
+      formData.time = formData.time
+      ? moment(new Date(formData.time)).utc().format()
+      : "";
+      formData.status = 'todo';
+            
+      await saveTodo(formData);
+      
+      props.onOk();
+    } catch (error) {
+      Notification({
+        type: "error",
+        description: "Salvar tarefa",
+        message:
+          "Houve um erro ao tentar criar a tarefa. Por favor, tente novamente.",
+      }); 
+    }
+
+  }, []);
 
   return (
     <Modal
-      onOk={() => form.submit()}
+      onOk={handleSave}
       visible={props.visible}
       onCancel={props.onCancel}
       okText={t("generic.button_save")}
       cancelText={t("generic.button_cancel")}
       title={
-        props.id
+        props.todoId
           ? t("components.modal_new_todo.modal_title_edit")
           : t("components.modal_new_todo.modal_title_new")
       }
@@ -70,7 +109,7 @@ export const ModalTodo = (props: Props) => {
           <InputTextComponent />
         </Form.Item>
 
-        <Form.Item name="done" style={{ display: "none" }}>
+        <Form.Item name="status" style={{ display: "none" }}>
           <InputTextComponent />
         </Form.Item>
 
