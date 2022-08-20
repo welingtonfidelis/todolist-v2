@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Empty } from "antd";
 
-import { ModalTodo } from "../modalTodo";
-import PrimaryButtonComponent from "../primaryButton";
-import TodoItemComponent from "../todoItem";
+import { ModalTodo } from "../../components/modalTodo";
+import PrimaryButtonComponent from "../../components/primaryButton";
+import TodoItemComponent from "../../components/todoItem";
 
 import {
   listTodo,
@@ -23,6 +23,7 @@ import {
   todoUpdateStatusItem,
 } from "../../store/todo/actions";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
 
 const emptyTodo = {
   color: "",
@@ -32,8 +33,10 @@ const emptyTodo = {
   done: false,
 };
 
-export default function TodoListComponent() {
-  const [selectedOptionMenu, setSelectedOptionMenu] = useState("todo");
+export default function TodoListPage() {
+  const { t } = useTranslation();
+
+  const [selectedOptionMenu, setSelectedOptionMenu] = useState("doing");
   const [showTodoModal, setShowTodoModal] = useState(false);
   const [selectedTodo, setSelectedTodo] =
     useState<TodoItemInterface>(emptyTodo);
@@ -46,8 +49,9 @@ export default function TodoListComponent() {
 
   useEffect(() => {
     const { ok, data } = listTodo({ status: "todo" });
+
     if (ok) dispatch(todoUpdateList(data));
-  }, []);
+  }, [dispatch]);
 
   const handleOpenModalTodo = () => {
     setShowTodoModal(true);
@@ -63,19 +67,27 @@ export default function TodoListComponent() {
     handleOpenModalTodo();
   };
 
-  const handleSelectOptionMenu = (selected: "done" | "todo" | "all") => {
+  const handleSelectOptionMenu = (selected: "done" | "todo" | "doing") => {
     setSelectedOptionMenu(selected);
+    console.log(
+      "🚀 ~ file: index.tsx ~ line 72 ~ handleSelectOptionMenu ~ selected",
+      selected
+    );
 
-    const status = selected !== "all" ? selected : undefined;
+    // const status = selected !== "all" ? selected : undefined;
 
-    const { ok, data } = listTodo({ status });
+    // const { ok, data } = listTodo({ status });
 
-    if (ok) dispatch(todoUpdateList(data));
+    // if (ok) dispatch(todoUpdateList(data));
   };
 
   const handleSaveTodo = (values: TodoItemInterface) => {
-    values.date = values.date ? moment(new Date(values.date)).utc().format() : "";
-    values.time = values.time ? moment(new Date(values.time)).utc().format() : "";
+    values.date = values.date
+      ? moment(new Date(values.date)).utc().format()
+      : "";
+    values.time = values.time
+      ? moment(new Date(values.time)).utc().format()
+      : "";
     values.done = values.done || false;
 
     if (values.id) {
@@ -91,7 +103,7 @@ export default function TodoListComponent() {
     handleCloseModalTodo();
   };
 
-  const handleUpdateStatusTodo = (id: string, status: boolean) => {   
+  const handleUpdateStatusTodo = (id: string, status: boolean) => {
     const { ok } = updateStatusTodo(id, status);
 
     if (ok) {
@@ -109,9 +121,9 @@ export default function TodoListComponent() {
   return (
     <div className="todo-list-component-content">
       <div className="new-todo-content">
-        <span>Aqui está o que temos para fazer.</span>
+        <span>{t(`pages.todo_list.page_title_${selectedOptionMenu}`)}</span>
         <PrimaryButtonComponent onClick={handleOpenModalTodo}>
-          Nova tarefa
+          {t('pages.todo_list.button_new_task')}
         </PrimaryButtonComponent>
       </div>
 
@@ -120,23 +132,23 @@ export default function TodoListComponent() {
           className={selectedOptionMenu === "done" ? "menu-selected" : ""}
           onClick={() => handleSelectOptionMenu("done")}
         >
-          Feitas
+          {t("pages.todo_list.tab_option_done")}
+        </span>
+        <span
+          className={selectedOptionMenu === "doing" ? "menu-selected" : ""}
+          onClick={() => handleSelectOptionMenu("doing")}
+        >
+          {t("pages.todo_list.tab_option_doing")}
         </span>
         <span
           className={selectedOptionMenu === "todo" ? "menu-selected" : ""}
           onClick={() => handleSelectOptionMenu("todo")}
         >
-          À fazer
-        </span>
-        <span
-          className={selectedOptionMenu === "all" ? "menu-selected" : ""}
-          onClick={() => handleSelectOptionMenu("all")}
-        >
-          Todas
+          {t("pages.todo_list.tab_option_todo")}
         </span>
       </div>
 
-      <div className="list">
+      {/* <div className="list">
         {todoOnReducer.list.length ? (
           todoOnReducer.list.map((item: TodoItemInterface) => (
             <TodoItemComponent
@@ -155,11 +167,10 @@ export default function TodoListComponent() {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}
-      </div>
+      </div> */}
 
       <ModalTodo
         visible={showTodoModal}
-        title="Nova tarefa"
         onOk={handleSaveTodo}
         onCancel={handleCloseModalTodo}
         {...selectedTodo}

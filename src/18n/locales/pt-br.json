@@ -1,0 +1,31 @@
+{
+  "components": {
+    "header": {
+      "welcome_title": "Olá, Seja bem vindo(a) de volta!"
+    },
+    "modal_new_todo": {
+      "modal_title_edit": "Editar tarefa",
+      "modal_title_new": "Nova tarefa",
+      "input_error_color": "Escolha uma cor",
+      "input_error_description": "Insira uma descrição",
+      "input_placeholder_description": "Descrição",
+      "input_placeholder_date": "Data",
+      "input_placeholder_time": "Horário"
+    }
+  },
+  "pages": {
+    "todo_list": {
+      "page_title_todo": "Aqui está o que temos para fazer.",
+      "page_title_doing": "Aqui está o que estamos fazendo.",
+      "page_title_done": "Aqui está o que fizemos.",
+      "tab_option_todo": "À fazer",
+      "tab_option_doing": "Fazendo",
+      "tab_option_done": "Feito",
+      "button_new_task": "Nova tarefa"
+    }
+  },
+  "generic": {
+    "button_save": "Salvar",
+    "button_cancel": "Cancelar"
+  }
+}

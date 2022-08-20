@@ -1,6 +1,7 @@
 import { Modal, Form, Radio } from "antd";
 import moment from "moment";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { TodoItemInterface } from "../../store/todo/model";
 
 import {
@@ -14,7 +15,6 @@ import "./style.css";
 
 interface Props extends TodoItemInterface {
   visible: boolean;
-  title: string;
 
   onOk: (item: any) => void;
   onCancel: () => void;
@@ -29,13 +29,10 @@ const initialFormvalues = {
 };
 
 export const ModalTodo = (props: Props) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (props.visible) setFormValues();
-  }, [props.visible]);
-
-  const setFormValues = () => {
+  const setFormValues = useCallback(() => {
     if (props.id) {
       form.setFieldsValue({
         ...props,
@@ -45,16 +42,24 @@ export const ModalTodo = (props: Props) => {
     } else {
       form.setFieldsValue({ ...initialFormvalues });
     }
-  };
+  }, [form, props]);
+
+  useEffect(() => {
+    if (props.visible) setFormValues();
+  }, [props.visible, setFormValues]);
 
   return (
     <Modal
       onOk={() => form.submit()}
       visible={props.visible}
       onCancel={props.onCancel}
-      okText="Salvar"
-      cancelText="Cancelar"
-      title={props.id ? "Editar tarefa" : "Nova tarefa"}
+      okText={t("generic.button_save")}
+      cancelText={t("generic.button_cancel")}
+      title={
+        props.id
+          ? t("components.modal_new_todo.modal_title_edit")
+          : t("components.modal_new_todo.modal_title_new")
+      }
     >
       <Form
         onFinish={props.onOk}
@@ -71,7 +76,12 @@ export const ModalTodo = (props: Props) => {
 
         <Form.Item
           name="color"
-          rules={[{ required: true, message: "Escolha uma cor" }]}
+          rules={[
+            {
+              required: true,
+              message: t("components.modal_new_todo.input_error_color"),
+            },
+          ]}
           className="color-palette"
         >
           <Radio.Group>
@@ -88,20 +98,34 @@ export const ModalTodo = (props: Props) => {
           rules={[
             {
               required: true,
-              message: "Insira uma descrição",
+              message: t("components.modal_new_todo.input_error_description"),
             },
           ]}
           className="input-text"
         >
-          <InputTextAreaComponent placeholder="Descrição" />
+          <InputTextAreaComponent
+            placeholder={t(
+              "components.modal_new_todo.input_placeholder_description"
+            )}
+          />
         </Form.Item>
 
         <div className="input-date-time">
           <Form.Item name="date">
-            <DatePickerComponent format="DD/MM/YYYY"/>
+            <DatePickerComponent
+              placeholder={t(
+                "components.modal_new_todo.input_placeholder_date"
+              )}
+              format="DD/MM/YYYY"
+            />
           </Form.Item>
           <Form.Item name="time">
-            <TimePickerComponent format="HH:mm"/>
+            <TimePickerComponent
+              placeholder={t(
+                "components.modal_new_todo.input_placeholder_time"
+              )}
+              format="HH:mm"
+            />
           </Form.Item>
         </div>
       </Form>

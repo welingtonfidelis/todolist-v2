@@ -1,5 +1,3 @@
-import { randomBytes } from "crypto";
-
 import { Notification } from "../components/notification";
 import { TodoItemInterface } from "../store/todo/model";
 
@@ -12,6 +10,7 @@ interface ListFilter {
   status?: "done" | "todo";
 }
 
+let idCount = 1;
 export const listTodo = (filter: ListFilter): ResponseInterface => {
   try {
     const stored = localStorage.getItem("todo@list#v2");//todoList;
@@ -38,7 +37,8 @@ export const listTodo = (filter: ListFilter): ResponseInterface => {
 
 export const saveTodo = (todo: TodoItemInterface): ResponseInterface => {
   try {
-    todo.id = randomBytes(8).toString("hex");
+    todo.id = idCount+ '';
+    idCount += 1;
 
     const stored = localStorage.getItem("todo@list#v2");
     const todoStored: Array<TodoItemInterface> = stored ? JSON.parse(stored) : [];

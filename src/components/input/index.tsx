@@ -7,7 +7,6 @@ import {
   InputProps,
 } from "antd";
 import { TextAreaProps } from "antd/lib/input";
-import InputMask, { Props as InputMaskProps } from "react-input-mask";
 
 const { TextArea } = Input;
 
@@ -46,11 +45,3 @@ export function TimePickerComponent(props: TimePickerProps) {
     </div>
   );
 }
-
-export const InputMaskComponent = (props: InputMaskProps) => (
-  <InputMask {...props}>
-    {(inputProps: InputProps) => (
-      <Input allowClear={true} size="large" {...inputProps} />
-    )}
-  </InputMask>
-);
