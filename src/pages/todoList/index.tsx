@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Empty } from "antd";
 
 import { ModalTodo } from "../../components/modalTodo";
@@ -29,14 +29,14 @@ export default function TodoListPage() {
   });
   const [todoListData, setTodoListData] = useState<TodoInterface[]>([]);
 
-  const getTodoList = useCallback(async (status: TodoStatusEnum) => {
-    const { ok, data } = await listTodo({ status });
+  const getTodoList = async () => {
+    const { ok, data } = await listTodo({ status: selectedOptionMenu });
 
     if (ok) setTodoListData(data || []);
-  }, []);
+  }
 
   useEffect(() => {
-    getTodoList(selectedOptionMenu);
+    getTodoList();
   }, [selectedOptionMenu]);
 
   const handleChangeModalTodoProps = (
@@ -51,7 +51,7 @@ export default function TodoListPage() {
 
   const handleSaveTodo = () => {
     handleChangeModalTodoProps(false);
-    getTodoList(selectedOptionMenu);
+    getTodoList();
   };
 
   return (
@@ -96,10 +96,10 @@ export default function TodoListPage() {
         {todoListData.length ? (
           todoListData.map((item: TodoInterface) => (
             <TodoItemComponent
-              {...item}
+              todo={item}
               key={item.id}
               onEditTodo={() => handleChangeModalTodoProps(true, item.id)}
-              onChangeStatusTodo={() => console.log("status change")}
+              onChangeStatusTodo={() => getTodoList()}
             />
           ))
         ) : (

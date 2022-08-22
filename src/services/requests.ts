@@ -1,4 +1,3 @@
-import { Notification } from "../components/notification";
 import { TodoInterface } from "../domains/todo";
 import { todoDB } from "./repositories/todo";
 import { AddTodoProps, ListTodoProps, UpdateTodoProps } from "./repositories/todo/types";
@@ -21,13 +20,13 @@ export const findTodoById = async (id: number): Promise<ResponseInterface<TodoIn
 }
 
 export const newTodo = async (todo: AddTodoProps): Promise<ResponseInterface<{}>> => {
-    const resp = await todoDB.add(todo)
+    await todoDB.add(todo)
 
     return { ok: true };
 };
 
 export const updateTodo = async (todo: UpdateTodoProps): Promise<ResponseInterface<{}>> => {
-  const resp = await todoDB.update(todo)
+  await todoDB.update(todo)
 
   return { ok: true };
 };

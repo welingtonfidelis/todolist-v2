@@ -61,7 +61,7 @@ export const ModalTodo = (props: Props) => {
           "Houve um erro ao tentar carregar a tarefa. Por favor, tente novamente.",
       });
     }
-  }, []);
+  }, [form]);
 
   useEffect(() => {
     if (!props.visible) {
@@ -82,19 +82,20 @@ export const ModalTodo = (props: Props) => {
       formData.time = formData.time
         ? moment(new Date(formData.time)).format()
         : "";
-      formData.status = "todo";
-
-      if (formData.id) await updateTodo({...formData, id: +formData.id});
-      else await newTodo(formData);
+        
+        if (formData.id) await updateTodo({...formData, id: +formData.id});
+        else {
+        formData.status = "todo";
+        await newTodo(formData);
+      }
 
       props.onOk();
     } catch (error) {
-      console.log("🚀 ~ file: index.tsx ~ line 103 ~ handleSave ~ error", error)
       Notification({
         type: "error",
         description: "Salvar tarefa",
         message:
-          "Houve um erro ao tentar criar a tarefa. Por favor, tente novamente.",
+          "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
       });
     }
   }, []);

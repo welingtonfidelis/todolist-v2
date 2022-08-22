@@ -9,36 +9,50 @@ import {
 } from "react-icons/fa";
 import { RiRestartFill } from "react-icons/ri";
 
-import { TodoInterface } from "../../domains/todo";
+import { TodoInterface, TodoStatusEnum } from "../../domains/todo";
+import { updateTodo } from "../../services/requests";
+import { Notification } from "../notification";
 
 
 import "./style.css";
 
-interface ItemPropsIterface extends TodoInterface {
+interface ItemPropsIterface {
+  todo: TodoInterface;
   onEditTodo: () => void;
   onChangeStatusTodo: () => void;
 }
 
 export default function TodoItemComponent(props: ItemPropsIterface) {
+  const { todo, onEditTodo, onChangeStatusTodo } = props;
+  
   let expiredDateClass = "";
-
-  if (props.date) {
-    const todoDate = moment(props.date);
+  if (todo.date) {
+    const todoDate = moment(todo.date);
     const today = moment();
 
     if(today.isAfter(todoDate, "date")) expiredDateClass = "date-expired";
   }
 
-  const handleChangeStatus = useCallback((status: string) => {
-  console.log("🚀 ~ file: index.tsx ~ line 33 ~ handleChangeStatus ~ status", status)
+  const handleChangeStatus = useCallback(async (status: TodoStatusEnum) => {
+  try {
+    await updateTodo({ ...todo, status });
 
+    onChangeStatusTodo();
+  } catch (error) {
+    Notification({
+      type: "error",
+      description: "Salvar tarefa",
+      message:
+        "Houve um erro ao tentar alterar o status da tarefa. Por favor, tente novamente.",
+    });
+  }
   }, []);
 
   const StatusIcon = useCallback(() => {
-    let icon = <FaCheckCircle onClick={() => {handleChangeStatus('todo')}} />;
+    let icon = <RiRestartFill onClick={() => {handleChangeStatus(TodoStatusEnum.TODO)}} />;
 
-    if (props.status === 'doing') icon = <RiRestartFill onClick={() => {handleChangeStatus('done')}} />;
-    else if (props.status === 'todo') icon = <FaRegCircle onClick={() => {handleChangeStatus('doing')}} />;
+    if (todo.status === 'doing') icon = <FaCheckCircle onClick={() => {handleChangeStatus(TodoStatusEnum.DONE)}} />;
+    else if (todo.status === 'todo') icon = <FaRegCircle onClick={() => {handleChangeStatus(TodoStatusEnum.DOING)}} />;
 
     return icon;
   }, []);
@@ -46,25 +60,25 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
   return (
     <div
       className="todo-item-component-content"
-      style={{ background: `#${props.color}` }}
+      style={{ background: `#${todo.color}` }}
     >
       <div className="col-1">
-        <div className="description">{props.description}</div>
+        <div className="description">{todo.description}</div>
 
         <div className="date-time">
           <div className={`date ${expiredDateClass}`}>
-            {props.date && (
+            {todo.date && (
               <>
                 <FaRegCalendarAlt />
-                <span>{moment(new Date(props.date)).utc().format("DD/MM/YYYY")}</span>
+                <span>{moment(new Date(todo.date)).utc().format("DD/MM/YYYY")}</span>
               </>
             )}
           </div>
           <div className="time">
-            {props.time && (
+            {todo.time && (
               <>
                 <FaClock />
-                <span>{moment(new Date(props.time)).format("HH:mm")}</span>
+                <span>{moment(new Date(todo.time)).format("HH:mm")}</span>
               </>
             )}
           </div>
@@ -72,14 +86,8 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
       </div>
 
       <div className="col-2">
-        <FaPen onClick={props.onEditTodo} />
+        <FaPen onClick={onEditTodo} />
         <StatusIcon />
-    
-        {/* {props.done ? (
-          <FaCheckCircle onClick={props.onChangeStatusTodo} />
-        ) : (
-          <FaRegCircle onClick={props.onChangeStatusTodo} />
-        )} */}
       </div>
     </div>
   );
