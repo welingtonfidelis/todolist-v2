@@ -1,7 +1,7 @@
 import { Notification } from "../components/notification";
 import { TodoInterface } from "../domains/todo";
 import { todoDB } from "./repositories/todo";
-import { AddTodoProps, ListTodoProps } from "./repositories/todo/types";
+import { AddTodoProps, ListTodoProps, UpdateTodoProps } from "./repositories/todo/types";
 
 interface ResponseInterface<T> {
   ok: boolean;
@@ -9,59 +9,26 @@ interface ResponseInterface<T> {
 }
 
 export const listTodo = async (filter: ListTodoProps): Promise<ResponseInterface<TodoInterface[]>> => {
-    // const stored = localStorage.getItem("todo@list#v2");//todoList;
-    // let list = stored ? JSON.parse(stored) : [];
-
-    // if (list.length && filter.status) {
-    //   list = list.filter((item: TodoItemInterface) => item.done === (filter.status === "done"));
-    // }
-
-    const data = await todoDB.find(filter);
+    const data = await todoDB.list(filter);
 
     return { ok: true, data: data };
 };
 
-export const saveTodo = async (todo: AddTodoProps): Promise<ResponseInterface<{}>> => {
-    await todoDB.add(todo)
+export const findTodoById = async (id: number): Promise<ResponseInterface<TodoInterface>> => {
+  const data = await todoDB.findById(id);
+
+  return { ok: true, data: data };
+}
+
+export const newTodo = async (todo: AddTodoProps): Promise<ResponseInterface<{}>> => {
+    const resp = await todoDB.add(todo)
 
     return { ok: true };
 };
 
-export const updateTodo = (todo: TodoInterface): ResponseInterface<any> => {
-  try {
-    
-    return { ok: true };
-  } catch (error) {
-    Notification({
-      type: "error",
-      description: "Salvar tarefa",
-      message:
-        "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
-    });
+export const updateTodo = async (todo: UpdateTodoProps): Promise<ResponseInterface<{}>> => {
+  const resp = await todoDB.update(todo)
 
-    console.log("UPDATE TODO ERROR", error);
-
-    return { ok: false };
-  }
+  return { ok: true };
 };
 
-export const updateStatusTodo = (
-  id: string,
-  status: boolean
-): ResponseInterface<any> => {
-  try {
-
-    return { ok: true };
-  } catch (error) {
-    Notification({
-      type: "error",
-      description: "Salvar tarefa",
-      message:
-        "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
-    });
-
-    console.log("UPDATE TODO STATUS ERROR", error);
-
-    return { ok: false };
-  }
-};

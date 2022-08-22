@@ -3,7 +3,7 @@ import moment from "moment";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { saveTodo } from "../../services/requests";
+import { findTodoById, newTodo, updateTodo } from "../../services/requests";
 
 import {
   InputTextAreaComponent,
@@ -23,15 +23,8 @@ interface Props {
   onCancel: () => void;
 }
 
-const initialFormvalues = {
-  id: null,
-  color: null,
-  description: null,
-  date: "",
-  time: "",
-};
-
 interface FormProps {
+  id?: number;
   color: string;
   description: string;
   date?: string;
@@ -43,48 +36,67 @@ export const ModalTodo = (props: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm<FormProps>();
 
-  // const setFormValues = useCallback(() => {
-  //   if (props.id) {
-  //     form.setFieldsValue({
-  //       ...props,
-  //       date: props.date && props.date.length ? moment(props.date) : null,
-  //       time: props.time && props.time.length ? moment(props.time) : null,
-  //     });
-  //   } else {
-  //     form.setFieldsValue({ ...initialFormvalues });
-  //   }
-  // }, [form, props]);
+  const getTodo = useCallback(async (id: number) => {
+    try {
+      const { ok, data } = await findTodoById(id);
+
+      if (ok && data) {
+        form.setFieldsValue({
+          ...data,
+          date:
+            data.date && data.date.length
+              ? (moment(data.date) as any)
+              : undefined,
+          time:
+            data.time && data.time.length
+              ? (moment(data.time) as any)
+              : undefined,
+        });
+      }
+    } catch (error) {
+      Notification({
+        type: "error",
+        description: "Carregar tarefa",
+        message:
+          "Houve um erro ao tentar carregar a tarefa. Por favor, tente novamente.",
+      });
+    }
+  }, []);
 
   useEffect(() => {
-    if (!props.visible) form.resetFields();
-    //setFormValues();
+    if (!props.visible) {
+      form.resetFields();
+
+      return;
+    }
+
+    if (props.todoId) getTodo(props.todoId);
   }, [props.visible]);
 
   const handleSave = useCallback(async () => {
     const formData = await form.validateFields();
     try {
-      
-      
       formData.date = formData.date
-      ? moment(new Date(formData.date)).utc().format()
-      : "";
+        ? moment(new Date(formData.date)).utc().format()
+        : "";
       formData.time = formData.time
-      ? moment(new Date(formData.time)).utc().format()
-      : "";
-      formData.status = 'todo';
-            
-      await saveTodo(formData);
-      
+        ? moment(new Date(formData.time)).format()
+        : "";
+      formData.status = "todo";
+
+      if (formData.id) await updateTodo({...formData, id: +formData.id});
+      else await newTodo(formData);
+
       props.onOk();
     } catch (error) {
+      console.log("🚀 ~ file: index.tsx ~ line 103 ~ handleSave ~ error", error)
       Notification({
         type: "error",
         description: "Salvar tarefa",
         message:
           "Houve um erro ao tentar criar a tarefa. Por favor, tente novamente.",
-      }); 
+      });
     }
-
   }, []);
 
   return (

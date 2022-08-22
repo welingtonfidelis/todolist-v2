@@ -5,12 +5,7 @@ import { ModalTodo } from "../../components/modalTodo";
 import PrimaryButtonComponent from "../../components/primaryButton";
 import TodoItemComponent from "../../components/todoItem";
 
-import {
-  listTodo,
-  saveTodo,
-  updateStatusTodo,
-  updateTodo,
-} from "../../services/requests";
+import { listTodo } from "../../services/requests";
 
 import { useTranslation } from "react-i18next";
 import { TodoInterface, TodoStatusEnum } from "../../domains/todo";
@@ -25,25 +20,33 @@ interface TodoModalProps {
 export default function TodoListPage() {
   const { t } = useTranslation();
 
-  const [selectedOptionMenu, setSelectedOptionMenu] = useState<TodoStatusEnum>(TodoStatusEnum.DOING);
-  const [todoModalProps, setTodoModalProps] = useState<TodoModalProps>({visible: false, todoId: null});
+  const [selectedOptionMenu, setSelectedOptionMenu] = useState<TodoStatusEnum>(
+    TodoStatusEnum.DOING
+  );
+  const [todoModalProps, setTodoModalProps] = useState<TodoModalProps>({
+    visible: false,
+    todoId: null,
+  });
   const [todoListData, setTodoListData] = useState<TodoInterface[]>([]);
 
   const getTodoList = useCallback(async (status: TodoStatusEnum) => {
     const { ok, data } = await listTodo({ status });
-    
-    if(ok) setTodoListData(data || []);
+
+    if (ok) setTodoListData(data || []);
   }, []);
 
   useEffect(() => {
     getTodoList(selectedOptionMenu);
   }, [selectedOptionMenu]);
 
-  const handleChangeModalTodoProps = (visible: boolean, todoId: number | null = null) => {
+  const handleChangeModalTodoProps = (
+    visible: boolean,
+    todoId: number | null = null
+  ) => {
     setTodoModalProps({
-        visible,
-        todoId
-      });
+      visible,
+      todoId,
+    });
   };
 
   const handleSaveTodo = () => {
@@ -55,26 +58,34 @@ export default function TodoListPage() {
     <div className="todo-list-component-content">
       <div className="new-todo-content">
         <span>{t(`pages.todo_list.page_title_${selectedOptionMenu}`)}</span>
-        <PrimaryButtonComponent onClick={() => handleChangeModalTodoProps(true)}>
-          {t('pages.todo_list.button_new_task')}
+        <PrimaryButtonComponent
+          onClick={() => handleChangeModalTodoProps(true)}
+        >
+          {t("pages.todo_list.button_new_task")}
         </PrimaryButtonComponent>
       </div>
 
       <div className="menu">
         <span
-          className={selectedOptionMenu === TodoStatusEnum.DONE ? "menu-selected" : ""}
+          className={
+            selectedOptionMenu === TodoStatusEnum.DONE ? "menu-selected" : ""
+          }
           onClick={() => setSelectedOptionMenu(TodoStatusEnum.DONE)}
         >
           {t("pages.todo_list.tab_option_done")}
         </span>
         <span
-          className={selectedOptionMenu === TodoStatusEnum.DOING ? "menu-selected" : ""}
+          className={
+            selectedOptionMenu === TodoStatusEnum.DOING ? "menu-selected" : ""
+          }
           onClick={() => setSelectedOptionMenu(TodoStatusEnum.DOING)}
         >
           {t("pages.todo_list.tab_option_doing")}
         </span>
         <span
-          className={selectedOptionMenu === TodoStatusEnum.TODO ? "menu-selected" : ""}
+          className={
+            selectedOptionMenu === TodoStatusEnum.TODO ? "menu-selected" : ""
+          }
           onClick={() => setSelectedOptionMenu(TodoStatusEnum.TODO)}
         >
           {t("pages.todo_list.tab_option_todo")}
@@ -88,10 +99,7 @@ export default function TodoListPage() {
               {...item}
               key={item.id}
               onEditTodo={() => handleChangeModalTodoProps(true, item.id)}
-              onChangeStatusTodo={() =>
-                console.log('status change')
-                
-              }
+              onChangeStatusTodo={() => console.log("status change")}
             />
           ))
         ) : (

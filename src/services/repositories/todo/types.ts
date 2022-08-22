@@ -1,12 +1,8 @@
-import { TodoStatusEnum } from "../../../domains/todo";
+import { TodoInterface, TodoStatusEnum } from "../../../domains/todo";
 
-export interface AddTodoProps {
-  color: string;
-  description: string;
-  date?: string;
-  time?: string;
-  status: "done" | "doing" | "todo";
-}
+export interface AddTodoProps extends Omit<TodoInterface, 'id'> {}
+
+export interface UpdateTodoProps extends TodoInterface {}
 
 export interface ListTodoProps {
   status: TodoStatusEnum;

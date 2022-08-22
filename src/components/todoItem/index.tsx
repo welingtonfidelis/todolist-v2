@@ -64,7 +64,7 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
             {props.time && (
               <>
                 <FaClock />
-                <span>{moment(new Date(props.time)).utc().format("HH:mm")}</span>
+                <span>{moment(new Date(props.time)).format("HH:mm")}</span>
               </>
             )}
           </div>
