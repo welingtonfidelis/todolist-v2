@@ -8,9 +8,18 @@ import TodoItemComponent from "../../components/todoItem";
 import { listTodo } from "../../services/requests";
 
 import { useTranslation } from "react-i18next";
-import { TodoInterface, TodoStatusEnum } from "../../domains/todo";
+import { TodoStatusEnum } from "../../domains/todo";
 
 import "./style.css";
+import moment from "moment";
+import {
+  TodoGroupItemsTitle,
+  TodoListContainer,
+  TodoListContent,
+  TodoListGroupItems,
+} from "./style";
+import { ListTodoResponse } from "../../services/repositories/todo/types";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 interface TodoModalProps {
   todoId: number | null;
@@ -27,13 +36,17 @@ export default function TodoListPage() {
     visible: false,
     todoId: null,
   });
-  const [todoListData, setTodoListData] = useState<TodoInterface[]>([]);
+  const [todoListData, setTodoListData] = useState<ListTodoResponse[]>([]);
 
   const getTodoList = async () => {
-    const { ok, data } = await listTodo({ status: selectedOptionMenu });
+    const { ok, data } = await listTodo({
+      status: selectedOptionMenu,
+      offset: 0,
+      limit: 100,
+    });
 
     if (ok) setTodoListData(data || []);
-  }
+  };
 
   useEffect(() => {
     getTodoList();
@@ -92,16 +105,33 @@ export default function TodoListPage() {
         </span>
       </div>
 
-      <div className="list">
+      <TodoListContainer>
         {todoListData.length ? (
-          todoListData.map((item: TodoInterface) => (
-            <TodoItemComponent
-              todo={item}
-              key={item.id}
-              onEditTodo={() => handleChangeModalTodoProps(true, item.id)}
-              onChangeStatusTodo={() => getTodoList()}
-            />
-          ))
+          todoListData.map((item, index) => {
+            return (
+              <TodoListContent>
+                <TodoGroupItemsTitle>
+                  <FaRegCalendarAlt />
+                  {item.date
+                    ? moment(new Date(item.date)).utc().format("DD/MM/YYYY")
+                    : "Sem data definida"}
+                </TodoGroupItemsTitle>
+
+                <TodoListGroupItems>
+                  {item.todo_list.map((subItem) => (
+                    <TodoItemComponent
+                      todo={subItem}
+                      key={subItem.id}
+                      onEditTodo={() =>
+                        handleChangeModalTodoProps(true, subItem.id)
+                      }
+                      onChangeStatusTodo={getTodoList}
+                    />
+                  ))}
+                </TodoListGroupItems>
+              </TodoListContent>
+            );
+          })
         ) : (
           <Empty
             description="Lista vazia"
@@ -109,7 +139,7 @@ export default function TodoListPage() {
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}
-      </div>
+      </TodoListContainer>
 
       <ModalTodo
         onOk={handleSaveTodo}

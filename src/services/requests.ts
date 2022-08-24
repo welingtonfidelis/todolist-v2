@@ -1,13 +1,13 @@
 import { TodoInterface } from "../domains/todo";
 import { todoDB } from "./repositories/todo";
-import { AddTodoProps, ListTodoProps, UpdateTodoProps } from "./repositories/todo/types";
+import { AddTodoProps, ListTodoProps, ListTodoResponse, UpdateTodoProps } from "./repositories/todo/types";
 
 interface ResponseInterface<T> {
   ok: boolean;
   data?: T;
 }
 
-export const listTodo = async (filter: ListTodoProps): Promise<ResponseInterface<TodoInterface[]>> => {
+export const listTodo = async (filter: ListTodoProps): Promise<ResponseInterface<ListTodoResponse[]>> => {
     const data = await todoDB.list(filter);
 
     return { ok: true, data: data };
