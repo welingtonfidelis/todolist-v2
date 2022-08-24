@@ -10,38 +10,46 @@ import { TextAreaProps } from "antd/lib/input";
 
 const { TextArea } = Input;
 
-export function InputTextComponent(props: InputProps) {
+export const InputTextComponent = (props: InputProps) => {
   return (
-    <div className="input-text-area-component-content">
-      <Input size="large" allowClear={true} {...props}>
-        {props.children}
-      </Input>
-    </div>
+    <Input size="large" allowClear={true} style={{ width: "100%" }} {...props}>
+      {props.children}
+    </Input>
   );
-}
+};
 
-export function InputTextAreaComponent(props: TextAreaProps) {
+export const InputTextAreaComponent = (props: TextAreaProps) => {
   return (
-    <div className="input-text-area-component-content">
-      <TextArea size="large" allowClear={true} rows={6} {...props}>
-        {props.children}
-      </TextArea>
-    </div>
+    <TextArea
+      size="large"
+      allowClear={true}
+      style={{ width: "100%" }}
+      rows={6}
+      {...props}
+    >
+      {props.children}
+    </TextArea>
   );
-}
+};
 
-export function DatePickerComponent(props: DatePickerProps) {
+export const DatePickerComponent = (props: DatePickerProps) => {
   return (
-    <div className="date-picker-component-content">
-      <DatePicker size="large" allowClear={true} {...props} />
-    </div>
+    <DatePicker
+      size="large"
+      allowClear={true}
+      style={{ width: "100%" }}
+      {...props}
+    />
   );
-}
+};
 
-export function TimePickerComponent(props: TimePickerProps) {
+export const TimePickerComponent = (props: TimePickerProps) => {
   return (
-    <div className="date-picker-component-content">
-      <TimePicker size="large" allowClear={true} {...props} />
-    </div>
+    <TimePicker
+      size="large"
+      allowClear={true}
+      style={{ width: "100%" }}
+      {...props}
+    />
   );
-}
+};

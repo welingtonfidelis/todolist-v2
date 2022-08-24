@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import moment from "moment";
 import { Empty } from "antd";
 
 import { ModalTodo } from "../../components/modalTodo";
@@ -10,9 +11,9 @@ import { listTodo } from "../../services/requests";
 import { useTranslation } from "react-i18next";
 import { TodoStatusEnum } from "../../domains/todo";
 
-import "./style.css";
-import moment from "moment";
 import {
+  Container,
+  NewTodoContainer,
   TodoGroupItemsTitle,
   TodoListContainer,
   TodoListContent,
@@ -20,6 +21,7 @@ import {
 } from "./style";
 import { ListTodoResponse } from "../../services/repositories/todo/types";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import TabMenu from "../../components/tabMenu";
 
 interface TodoModalProps {
   todoId: number | null;
@@ -68,42 +70,21 @@ export default function TodoListPage() {
   };
 
   return (
-    <div className="todo-list-component-content">
-      <div className="new-todo-content">
+    <Container>
+      <NewTodoContainer>
         <span>{t(`pages.todo_list.page_title_${selectedOptionMenu}`)}</span>
+
         <PrimaryButtonComponent
           onClick={() => handleChangeModalTodoProps(true)}
         >
           {t("pages.todo_list.button_new_task")}
         </PrimaryButtonComponent>
-      </div>
+      </NewTodoContainer>
 
-      <div className="menu">
-        <span
-          className={
-            selectedOptionMenu === TodoStatusEnum.DONE ? "menu-selected" : ""
-          }
-          onClick={() => setSelectedOptionMenu(TodoStatusEnum.DONE)}
-        >
-          {t("pages.todo_list.tab_option_done")}
-        </span>
-        <span
-          className={
-            selectedOptionMenu === TodoStatusEnum.DOING ? "menu-selected" : ""
-          }
-          onClick={() => setSelectedOptionMenu(TodoStatusEnum.DOING)}
-        >
-          {t("pages.todo_list.tab_option_doing")}
-        </span>
-        <span
-          className={
-            selectedOptionMenu === TodoStatusEnum.TODO ? "menu-selected" : ""
-          }
-          onClick={() => setSelectedOptionMenu(TodoStatusEnum.TODO)}
-        >
-          {t("pages.todo_list.tab_option_todo")}
-        </span>
-      </div>
+      <TabMenu
+        selectedOption={selectedOptionMenu}
+        changeSelectedOption={setSelectedOptionMenu}
+      />
 
       <TodoListContainer>
         {todoListData.length ? (
@@ -135,7 +116,6 @@ export default function TodoListPage() {
         ) : (
           <Empty
             description="Lista vazia"
-            className="list-empty"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         )}
@@ -146,6 +126,6 @@ export default function TodoListPage() {
         onCancel={() => handleChangeModalTodoProps(false)}
         {...todoModalProps}
       />
-    </div>
+    </Container>
   );
 }

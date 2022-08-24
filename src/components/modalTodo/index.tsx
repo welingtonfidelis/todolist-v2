@@ -12,8 +12,12 @@ import {
   TimePickerComponent,
 } from "../input";
 import { Notification } from "../notification";
-
-import "./style.css";
+import {
+  ColorCardContainer,
+  ColorCardItem,
+  Container,
+  DateTimeContainer,
+} from "./style";
 
 interface Props {
   todoId: number | null;
@@ -36,32 +40,37 @@ export const ModalTodo = (props: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm<FormProps>();
 
-  const getTodo = useCallback(async (id: number) => {
-    try {
-      const { ok, data } = await findTodoById(id);
+  const colorCardOptions = ["F4A261", "FFC6FF", "FFADAD", "CAFFBF", "A0C4FF"];
 
-      if (ok && data) {
-        form.setFieldsValue({
-          ...data,
-          date:
-            data.date && data.date.length
-              ? (moment(data.date) as any)
-              : undefined,
-          time:
-            data.time && data.time.length
-              ? (moment(data.time) as any)
-              : undefined,
+  const getTodo = useCallback(
+    async (id: number) => {
+      try {
+        const { ok, data } = await findTodoById(id);
+
+        if (ok && data) {
+          form.setFieldsValue({
+            ...data,
+            date:
+              data.date && data.date.length
+                ? (moment(data.date) as any)
+                : undefined,
+            time:
+              data.time && data.time.length
+                ? (moment(data.time) as any)
+                : undefined,
+          });
+        }
+      } catch (error) {
+        Notification({
+          type: "error",
+          description: "Carregar tarefa",
+          message:
+            "Houve um erro ao tentar carregar a tarefa. Por favor, tente novamente.",
         });
       }
-    } catch (error) {
-      Notification({
-        type: "error",
-        description: "Carregar tarefa",
-        message:
-          "Houve um erro ao tentar carregar a tarefa. Por favor, tente novamente.",
-      });
-    }
-  }, [form]);
+    },
+    [form]
+  );
 
   useEffect(() => {
     if (!props.visible) {
@@ -82,9 +91,9 @@ export const ModalTodo = (props: Props) => {
       formData.time = formData.time
         ? moment(new Date(formData.time)).format()
         : "";
-        
-        if (formData.id) await updateTodo({...formData, id: +formData.id});
-        else {
+
+      if (formData.id) await updateTodo({ ...formData, id: +formData.id });
+      else {
         formData.status = "todo";
         await newTodo(formData);
       }
@@ -113,74 +122,76 @@ export const ModalTodo = (props: Props) => {
           : t("components.modal_new_todo.modal_title_new")
       }
     >
-      <Form
-        onFinish={props.onOk}
-        form={form}
-        className="modal-todo-component-content"
-      >
-        <Form.Item name="id" style={{ display: "none" }}>
-          <InputTextComponent />
-        </Form.Item>
-
-        <Form.Item name="status" style={{ display: "none" }}>
-          <InputTextComponent />
-        </Form.Item>
-
-        <Form.Item
-          name="color"
-          rules={[
-            {
-              required: true,
-              message: t("components.modal_new_todo.input_error_color"),
-            },
-          ]}
-          className="color-palette"
+      <Container>
+        <Form
+          onFinish={props.onOk}
+          form={form}
+          className="modal-todo-component-content"
         >
-          <Radio.Group>
-            <Radio value="F4A261" style={{ background: "#F4A261" }} />
-            <Radio value="FFC6FF" style={{ background: "#FFC6FF" }} />
-            <Radio value="FFADAD" style={{ background: "#FFADAD" }} />
-            <Radio value="CAFFBF" style={{ background: "#CAFFBF" }} />
-            <Radio value="A0C4FF" style={{ background: "#A0C4FF" }} />
-          </Radio.Group>
-        </Form.Item>
+          <Form.Item name="id" style={{ display: "none" }}>
+            <InputTextComponent />
+          </Form.Item>
 
-        <Form.Item
-          name="description"
-          rules={[
-            {
-              required: true,
-              message: t("components.modal_new_todo.input_error_description"),
-            },
-          ]}
-          className="input-text"
-        >
-          <InputTextAreaComponent
-            placeholder={t(
-              "components.modal_new_todo.input_placeholder_description"
-            )}
-          />
-        </Form.Item>
+          <Form.Item name="status" style={{ display: "none" }}>
+            <InputTextComponent />
+          </Form.Item>
 
-        <div className="input-date-time">
-          <Form.Item name="date">
-            <DatePickerComponent
+          <ColorCardContainer>
+            <Form.Item
+              name="color"
+              rules={[
+                {
+                  required: true,
+                  message: t("components.modal_new_todo.input_error_color"),
+                },
+              ]}
+              className="color-palette"
+            >
+              <Radio.Group>
+                {colorCardOptions.map((item) => (
+                  <ColorCardItem value={item} color={item} key={item} />
+                ))}
+              </Radio.Group>
+            </Form.Item>
+          </ColorCardContainer>
+
+          <Form.Item
+            name="description"
+            rules={[
+              {
+                required: true,
+                message: t("components.modal_new_todo.input_error_description"),
+              },
+            ]}
+            className="input-text"
+          >
+            <InputTextAreaComponent
               placeholder={t(
-                "components.modal_new_todo.input_placeholder_date"
+                "components.modal_new_todo.input_placeholder_description"
               )}
-              format="DD/MM/YYYY"
             />
           </Form.Item>
-          <Form.Item name="time">
-            <TimePickerComponent
-              placeholder={t(
-                "components.modal_new_todo.input_placeholder_time"
-              )}
-              format="HH:mm"
-            />
-          </Form.Item>
-        </div>
-      </Form>
+
+          <DateTimeContainer>
+            <Form.Item name="date">
+              <DatePickerComponent
+                placeholder={t(
+                  "components.modal_new_todo.input_placeholder_date"
+                )}
+                format="DD/MM/YYYY"
+              />
+            </Form.Item>
+            <Form.Item name="time">
+              <TimePickerComponent
+                placeholder={t(
+                  "components.modal_new_todo.input_placeholder_time"
+                )}
+                format="HH:mm"
+              />
+            </Form.Item>
+          </DateTimeContainer>
+        </Form>
+      </Container>
     </Modal>
   );
 };

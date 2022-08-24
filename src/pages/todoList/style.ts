@@ -1,5 +1,26 @@
 import styled from "styled-components";
 
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const NewTodoContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 64px;
+
+  & > span {
+    font-size: 1.3rem;
+    width: 60%;
+  }
+`;
+
 export const TodoListContainer = styled.div`
   display: flex;
   flex-direction: column;
