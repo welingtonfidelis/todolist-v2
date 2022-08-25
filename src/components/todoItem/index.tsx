@@ -1,5 +1,6 @@
 import moment from "moment";
 import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import {
   FaPen,
   FaRegCircle,
@@ -23,6 +24,7 @@ interface ItemPropsIterface {
 
 export default function TodoItemComponent(props: ItemPropsIterface) {
   const { todo, onEditTodo, onChangeStatusTodo } = props;
+  const { t } = useTranslation();
 
   let hasExpiredDate = false;
   if (todo.status === 'doing' && todo.date) {
@@ -40,9 +42,8 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
     } catch (error) {
       Notification({
         type: "error",
-        description: "Salvar tarefa",
-        message:
-          "Houve um erro ao tentar alterar o status da tarefa. Por favor, tente novamente.",
+        description: t('components.modal_change_todo.error_load_todo_title'),
+        message: t('components.modal_change_todo.error_load_todo_message'),
       });
     }
   }, []);

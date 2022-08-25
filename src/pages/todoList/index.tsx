@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import { Empty } from "antd";
 
@@ -51,6 +51,8 @@ export default function TodoListPage() {
   };
 
   useEffect(() => {
+    console.log("test");
+
     getTodoList();
   }, [selectedOptionMenu]);
 
@@ -95,7 +97,7 @@ export default function TodoListPage() {
                   <FaRegCalendarAlt />
                   {item.date
                     ? moment(new Date(item.date)).utc().format("DD/MM/YYYY")
-                    : "Sem data definida"}
+                    : t("pages.todo_list.no_date_todo_title")}
                 </TodoGroupItemsTitle>
 
                 <TodoListGroupItems>

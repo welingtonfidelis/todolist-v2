@@ -63,9 +63,8 @@ export const ModalTodo = (props: Props) => {
       } catch (error) {
         Notification({
           type: "error",
-          description: "Carregar tarefa",
-          message:
-            "Houve um erro ao tentar carregar a tarefa. Por favor, tente novamente.",
+          description: t('components.modal_new_todo.error_load_todo_title'),
+          message: t('components.modal_new_todo.error_load_todo_message'),
         });
       }
     },
@@ -80,7 +79,7 @@ export const ModalTodo = (props: Props) => {
     }
 
     if (props.todoId) getTodo(props.todoId);
-  }, [props.visible]);
+  }, [form, getTodo, props.todoId, props.visible]);
 
   const handleSave = useCallback(async () => {
     const formData = await form.validateFields();
@@ -102,9 +101,8 @@ export const ModalTodo = (props: Props) => {
     } catch (error) {
       Notification({
         type: "error",
-        description: "Salvar tarefa",
-        message:
-          "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
+        description: t('components.modal_new_todo.error_save_todo_title'),
+        message: t('components.modal_new_todo.error_save_todo_message'),
       });
     }
   }, []);
