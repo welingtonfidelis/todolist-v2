@@ -91,10 +91,18 @@ export default function TodoListPage() {
       <TodoListContainer>
         {todoListData.length ? (
           todoListData.map((item, index) => {
+            let hasExpiredDate = false;
+            if (selectedOptionMenu !== TodoStatusEnum.DONE && item.date) {
+              const todoDate = moment(item.date);
+              const today = moment();
+          
+              hasExpiredDate = today.isAfter(todoDate, "date");
+            }
+
             return (
               <TodoListContent>
-                <TodoGroupItemsTitle>
-                  <FaRegCalendarAlt />
+                <TodoGroupItemsTitle isFirst={index === 0}>
+                  <FaRegCalendarAlt color={hasExpiredDate ? 'red' : ''}/>
                   {item.date
                     ? moment(new Date(item.date)).utc().format("DD/MM/YYYY")
                     : t("pages.todo_list.no_date_todo_title")}

@@ -35,10 +35,8 @@ class TodoDB {
         });
       } else {
         const todoListIndex = todoList.length - 1;
-        const isSameDate = moment(todo.date).isSame(
-          todoList[todoListIndex].date,
-          "date"
-        );
+        const previousDate = todoList[todoListIndex].date;
+        const isSameDate = todo.date === previousDate || moment(todo.date).isSame(previousDate, "date");
 
         if (isSameDate) todoList[todoListIndex].todo_list.push(todo);
         else {

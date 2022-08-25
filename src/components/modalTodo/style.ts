@@ -10,6 +10,7 @@ export const ColorCardItem = styled(Radio)<{ color: string }>`
   border-radius: 4px;
   height: 2.5rem;
   width: 2.5rem;
+  margin-bottom: 8px;
 `;
 
 export const DateTimeContainer = styled.div`

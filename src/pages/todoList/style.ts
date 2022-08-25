@@ -29,9 +29,11 @@ export const TodoListContainer = styled.div`
   overflow: auto;
 `;
 
-export const TodoGroupItemsTitle = styled.span`
+export const TodoGroupItemsTitle = styled.span<{ isFirst: boolean }>`
   font-size: 1rem;
   font-weight: 500;
+
+  margin-top: ${(props) => (props.isFirst ? "" : "16px")};
 
   & svg {
     margin-right: 4px;

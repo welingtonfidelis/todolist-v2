@@ -18,7 +18,10 @@
     },
     "todo_item": {
       "error_change_todo_title": "Salvar tarefa",
-      "error_change_todo_message": "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente."
+      "error_change_todo_message": "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
+      "hover_title_restart_todo": "Reiniciar tarefa",
+      "hover_title_done_todo": "Finalizar tarefa",
+      "hover_title_doing_todo": "Iniciar tarefa"
     }
   },
   "pages": {

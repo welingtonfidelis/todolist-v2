@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   FaPen,
   FaRegCircle,
-  FaRegCalendarAlt,
   FaClock,
   FaCheckCircle,
 } from "react-icons/fa";
@@ -13,7 +12,14 @@ import { RiRestartFill } from "react-icons/ri";
 import { TodoInterface, TodoStatusEnum } from "../../domains/todo";
 import { updateTodo } from "../../services/requests";
 import { Notification } from "../notification";
-import { Col1, Col2, Container, DateTimeContainer, DateTimeContent, Description } from "./style";
+import {
+  Col1,
+  Col2,
+  Container,
+  DateTimeContainer,
+  DateTimeContent,
+  Description,
+} from "./style";
 
 interface ItemPropsIterface {
   todo: TodoInterface;
@@ -26,14 +32,6 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
   const { todo, onEditTodo, onChangeStatusTodo } = props;
   const { t } = useTranslation();
 
-  let hasExpiredDate = false;
-  if (todo.status === 'doing' && todo.date) {
-    const todoDate = moment(todo.date);
-    const today = moment();
-
-    hasExpiredDate = today.isAfter(todoDate, "date");
-  }
-
   const handleChangeStatus = useCallback(async (status: TodoStatusEnum) => {
     try {
       await updateTodo({ ...todo, status });
@@ -42,8 +40,8 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
     } catch (error) {
       Notification({
         type: "error",
-        description: t('components.modal_change_todo.error_load_todo_title'),
-        message: t('components.modal_change_todo.error_load_todo_message'),
+        description: t("components.modal_change_todo.error_load_todo_title"),
+        message: t("components.modal_change_todo.error_load_todo_message"),
       });
     }
   }, []);
@@ -54,25 +52,29 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
         onClick={() => {
           handleChangeStatus(TodoStatusEnum.TODO);
         }}
+        title={t("components.todo_item.hover_title_restart_todo")}
       />
     );
 
-    if (todo.status === "doing")
+    if (todo.status === "doing") {
       icon = (
         <FaCheckCircle
           onClick={() => {
             handleChangeStatus(TodoStatusEnum.DONE);
           }}
+          title={t("components.todo_item.hover_title_done_todo")}
         />
       );
-    else if (todo.status === "todo")
+    } else if (todo.status === "todo") {
       icon = (
         <FaRegCircle
           onClick={() => {
             handleChangeStatus(TodoStatusEnum.DOING);
           }}
+          title={t("components.todo_item.hover_title_doing_todo")}
         />
       );
+    }
 
     return icon;
   }, []);
@@ -83,7 +85,7 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
         <Description>{todo.description}</Description>
 
         <DateTimeContainer>
-            {/* {todo.date && (
+          {/* {todo.date && (
               <DateTimeContent hasExpiredDate={hasExpiredDate}>
                 <FaRegCalendarAlt />
                 <span>
@@ -91,12 +93,12 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
                 </span>
               </DateTimeContent>
             )} */}
-            {todo.time && (
-              <DateTimeContent hasExpiredDate={false}>
-                <FaClock />
-                <span>{moment(new Date(todo.time)).format("HH:mm")}</span>
-              </DateTimeContent>
-            )}
+          {todo.time && (
+            <DateTimeContent hasExpiredDate={false}>
+              <FaClock />
+              <span>{moment(new Date(todo.time)).format("HH:mm")}</span>
+            </DateTimeContent>
+          )}
         </DateTimeContainer>
       </Col1>
 

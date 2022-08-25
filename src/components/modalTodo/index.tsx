@@ -40,12 +40,28 @@ export const ModalTodo = (props: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm<FormProps>();
 
-  const colorCardOptions = ["F4A261", "FFC6FF", "FFADAD", "CAFFBF", "A0C4FF"];
+  const colorCardOptions = [
+    "F4A261",
+    "FFC6FF",
+    "FFADAD",
+    "CAFFBF",
+    "A0C4FF",
+    "3772ff",
+    "df2935",
+    "fdca40",
+    "e6e8e6",
+    "f4d8cd",
+    "edb183",
+    "c3f73a",
+    "ff773d",
+    "d72483",
+  ];
 
   const getTodo = useCallback(
     async (id: number) => {
       try {
         const { ok, data } = await findTodoById(id);
+        console.log('data: ', data);
 
         if (ok && data) {
           form.setFieldsValue({
@@ -63,8 +79,8 @@ export const ModalTodo = (props: Props) => {
       } catch (error) {
         Notification({
           type: "error",
-          description: t('components.modal_new_todo.error_load_todo_title'),
-          message: t('components.modal_new_todo.error_load_todo_message'),
+          description: t("components.modal_new_todo.error_load_todo_title"),
+          message: t("components.modal_new_todo.error_load_todo_message"),
         });
       }
     },
@@ -101,8 +117,8 @@ export const ModalTodo = (props: Props) => {
     } catch (error) {
       Notification({
         type: "error",
-        description: t('components.modal_new_todo.error_save_todo_title'),
-        message: t('components.modal_new_todo.error_save_todo_message'),
+        description: t("components.modal_new_todo.error_save_todo_title"),
+        message: t("components.modal_new_todo.error_save_todo_message"),
       });
     }
   }, []);
@@ -143,11 +159,10 @@ export const ModalTodo = (props: Props) => {
                   message: t("components.modal_new_todo.input_error_color"),
                 },
               ]}
-              className="color-palette"
             >
               <Radio.Group>
                 {colorCardOptions.map((item) => (
-                  <ColorCardItem value={item} color={item} key={item} />
+                  <ColorCardItem value={item} color={item} key={item}/>
                 ))}
               </Radio.Group>
             </Form.Item>
