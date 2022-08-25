@@ -1,11 +1,16 @@
+
+import { useTranslation } from "react-i18next";
+
 import UserAvatarComponent from "../userAvatar";
-import "./style.css";
+import { HeaderContent } from "./style";
 
 export default function HeaderComponent() {
+  const {t} = useTranslation();
+
   return (
-    <div className="header-content">
-      <span>Olá, Seja bem vindo(a) de volta!</span>
+    <HeaderContent>
+      <span>{t('components.header.welcome_title')}</span>
       <UserAvatarComponent />
-    </div>
+    </HeaderContent>
   );
 }

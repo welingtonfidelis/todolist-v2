@@ -1,13 +1,12 @@
 import { Button, ButtonProps } from "antd";
-
-import "./style.css";
+import { Container } from "./style";
 
 interface PropsInterface extends ButtonProps {}
 
 export default function PrimaryButtonComponent(props: PropsInterface) {
   return (
-    <div className="primary-button-component-content">
+    <Container>
       <Button type="primary" {...props}>{props.children}</Button>
-    </div>
+    </Container>
   )
 }
