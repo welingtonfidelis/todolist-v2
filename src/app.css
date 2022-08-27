@@ -23,12 +23,6 @@
   --color-warning: #e9ee09;
 }
 
-body {
-  height: 100vh;
-  color: var(--color-text-primary);
-  padding: 8px;
-}
-
 ::-webkit-scrollbar {
   width: 5px;
   background: var(--color-background);

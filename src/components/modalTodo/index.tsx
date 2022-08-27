@@ -120,12 +120,12 @@ export const ModalTodo = (props: Props) => {
         description: t("components.modal_new_todo.error_save_todo_title"),
         message: t("components.modal_new_todo.error_save_todo_message"),
       });
-    }
-  }, []);
+    }    
+  }, [form, props, t]);
 
   return (
     <Modal
-      onOk={handleSave}
+      onOk={form.submit}
       visible={props.visible}
       onCancel={props.onCancel}
       okText={t("generic.button_save")}
@@ -138,7 +138,7 @@ export const ModalTodo = (props: Props) => {
     >
       <Container>
         <Form
-          onFinish={props.onOk}
+          onFinish={handleSave}
           form={form}
           className="modal-todo-component-content"
         >

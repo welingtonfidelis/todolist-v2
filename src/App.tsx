@@ -5,14 +5,17 @@ import TodoListPage from "./pages/todoList";
 import HeaderComponent from "./components/header";
 
 import "./app.css";
+import { Container, Content } from "./style";
 
 function App() {
   return (
     <I18nextProvider i18n={i18n}>
-      <div className="app-content">
-        <HeaderComponent />
-        <TodoListPage />
-      </div>
+      <Container>
+        <Content>
+          <HeaderComponent />
+          <TodoListPage />
+        </Content>
+      </Container>
     </I18nextProvider>
   );
 }

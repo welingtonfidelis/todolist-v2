@@ -25,7 +25,7 @@ export const TodoListContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 202px);
   overflow: auto;
 `;
 

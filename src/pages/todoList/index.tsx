@@ -51,8 +51,6 @@ export default function TodoListPage() {
   };
 
   useEffect(() => {
-    console.log("test");
-
     getTodoList();
   }, [selectedOptionMenu]);
 
@@ -66,8 +64,9 @@ export default function TodoListPage() {
     });
   };
 
-  const handleSaveTodo = () => {
+  const handleSaveTodo = () => {    
     handleChangeModalTodoProps(false);
+
     getTodoList();
   };
 
