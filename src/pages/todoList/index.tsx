@@ -6,7 +6,7 @@ import { ModalTodo } from "../../components/modalTodo";
 import PrimaryButtonComponent from "../../components/primaryButton";
 import TodoItemComponent from "../../components/todoItem";
 
-import { listTodo } from "../../services/requests";
+import { deleTodo, listTodo } from "../../services/requests";
 
 import { useTranslation } from "react-i18next";
 import { TodoStatusEnum } from "../../domains/todo";
@@ -22,6 +22,7 @@ import {
 import { ListTodoResponse } from "../../services/repositories/todo/types";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import TabMenu from "../../components/tabMenu";
+import { Notification } from "../../components/notification";
 
 interface TodoModalProps {
   todoId: number | null;
@@ -64,11 +65,28 @@ export default function TodoListPage() {
     });
   };
 
-  const handleSaveTodo = () => {    
+  const handleSaveTodo = () => {
     handleChangeModalTodoProps(false);
 
     getTodoList();
   };
+
+  const handleDeleteTodo = useCallback(
+    async (id: number) => {
+      try {
+        await deleTodo(id);
+
+        getTodoList();
+      } catch (error) {
+        Notification({
+          type: "error",
+          description: t("components.todo_item.error_delete_todo_title"),
+          message: t("components.todo_item.error_delete_todo_message"),
+        });
+      }
+    },
+    [t]
+  );
 
   return (
     <Container>
@@ -94,14 +112,14 @@ export default function TodoListPage() {
             if (selectedOptionMenu !== TodoStatusEnum.DONE && item.date) {
               const todoDate = moment(item.date);
               const today = moment();
-          
+
               hasExpiredDate = today.isAfter(todoDate, "date");
             }
 
             return (
               <TodoListContent>
                 <TodoGroupItemsTitle isFirst={index === 0}>
-                  <FaRegCalendarAlt color={hasExpiredDate ? 'red' : ''}/>
+                  <FaRegCalendarAlt color={hasExpiredDate ? "red" : ""} />
                   {item.date
                     ? moment(new Date(item.date)).utc().format("DD/MM/YYYY")
                     : t("pages.todo_list.no_date_todo_title")}
@@ -112,9 +130,8 @@ export default function TodoListPage() {
                     <TodoItemComponent
                       todo={subItem}
                       key={subItem.id}
-                      onEditTodo={() =>
-                        handleChangeModalTodoProps(true, subItem.id)
-                      }
+                      onEditTodo={() => handleChangeModalTodoProps(true, subItem.id)}
+                      onDeleteTodo={() => handleDeleteTodo(subItem.id!)}
                       onChangeStatusTodo={getTodoList}
                     />
                   ))}

@@ -1,13 +1,12 @@
+import { Dropdown, Menu, Popconfirm } from "antd";
 import moment from "moment";
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   FaPen,
-  FaRegCircle,
   FaClock,
-  FaCheckCircle,
+  FaTrash,
 } from "react-icons/fa";
-import { RiRestartFill } from "react-icons/ri";
 
 import { TodoInterface, TodoStatusEnum } from "../../domains/todo";
 import { updateTodo } from "../../services/requests";
@@ -25,11 +24,12 @@ interface ItemPropsIterface {
   todo: TodoInterface;
 
   onEditTodo: () => void;
+  onDeleteTodo: () => void;
   onChangeStatusTodo: () => void;
 }
 
 export default function TodoItemComponent(props: ItemPropsIterface) {
-  const { todo, onEditTodo, onChangeStatusTodo } = props;
+  const { todo, onEditTodo, onDeleteTodo, onChangeStatusTodo } = props;
   const { t } = useTranslation();
 
   const handleChangeStatus = useCallback(async (status: TodoStatusEnum) => {
@@ -46,38 +46,32 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
     }
   }, []);
 
-  const StatusIcon = useCallback(() => {
-    let icon = (
-      <RiRestartFill
-        onClick={() => {
-          handleChangeStatus(TodoStatusEnum.TODO);
-        }}
-        title={t("components.todo_item.hover_title_restart_todo")}
-      />
-    );
+  const menuOptionEdit = {
+    key: "1",
+    label: t("components.todo_item.menu_option_edit"),
+    onClick: onEditTodo,
+  };
+  const menuOptionTodo = {
+    key: "2",
+    label: t("components.todo_item.menu_option_todo"),
+    onClick: () => handleChangeStatus(TodoStatusEnum.TODO),
+  };
+  const menuOptionDoing = {
+    key: "3",
+    label: t("components.todo_item.menu_option_doing"),
+    onClick: () => handleChangeStatus(TodoStatusEnum.DOING),
+  };
+  const menuOptionDone = {
+    key: "4",
+    label: t("components.todo_item.menu_option_done"),
+    onClick: () => handleChangeStatus(TodoStatusEnum.DONE),
+  };
 
-    if (todo.status === "doing") {
-      icon = (
-        <FaCheckCircle
-          onClick={() => {
-            handleChangeStatus(TodoStatusEnum.DONE);
-          }}
-          title={t("components.todo_item.hover_title_done_todo")}
-        />
-      );
-    } else if (todo.status === "todo") {
-      icon = (
-        <FaRegCircle
-          onClick={() => {
-            handleChangeStatus(TodoStatusEnum.DOING);
-          }}
-          title={t("components.todo_item.hover_title_doing_todo")}
-        />
-      );
-    }
+  const menuOptionList = [menuOptionEdit];
 
-    return icon;
-  }, []);
+  if (todo.status === TodoStatusEnum.TODO) menuOptionList.push(menuOptionDoing, menuOptionDone);
+  else if (todo.status === TodoStatusEnum.DOING) menuOptionList.push(menuOptionTodo, menuOptionDone);
+  else menuOptionList.push(menuOptionTodo, menuOptionDoing);
 
   return (
     <Container backgroundColor={todo.color}>
@@ -85,14 +79,6 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
         <Description>{todo.description}</Description>
 
         <DateTimeContainer>
-          {/* {todo.date && (
-              <DateTimeContent hasExpiredDate={hasExpiredDate}>
-                <FaRegCalendarAlt />
-                <span>
-                  {moment(new Date(todo.date)).utc().format("DD/MM/YYYY")}
-                </span>
-              </DateTimeContent>
-            )} */}
           {todo.time && (
             <DateTimeContent hasExpiredDate={false}>
               <FaClock />
@@ -103,8 +89,25 @@ export default function TodoItemComponent(props: ItemPropsIterface) {
       </Col1>
 
       <Col2>
-        <FaPen onClick={onEditTodo} />
-        <StatusIcon />
+        <Dropdown
+          overlay={<Menu items={menuOptionList} />}
+          placement="bottomRight"
+          arrow={{ pointAtCenter: true }}
+          trigger={["click"]}
+          getPopupContainer={(e) => e.parentElement as HTMLElement}
+        >
+          <FaPen />
+        </Dropdown>
+
+        <Popconfirm
+          placement="bottomRight"
+          title={t("components.todo_item.menu_option_delete_message")}
+          onConfirm={onDeleteTodo}
+          okText={t("generic.button_yes")}
+          cancelText={t("generic.button_no")}
+        >
+          <FaTrash />
+        </Popconfirm>
       </Col2>
     </Container>
   );

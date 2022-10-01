@@ -36,7 +36,9 @@ class TodoDB {
       } else {
         const todoListIndex = todoList.length - 1;
         const previousDate = todoList[todoListIndex].date;
-        const isSameDate = todo.date === previousDate || moment(todo.date).isSame(previousDate, "date");
+        const isSameDate =
+          todo.date === previousDate ||
+          moment(todo.date).isSame(previousDate, "date");
 
         if (isSameDate) todoList[todoListIndex].todo_list.push(todo);
         else {
@@ -63,6 +65,10 @@ class TodoDB {
 
   update(todo: TodoInterface): Promise<IndexableType> {
     return this.db.todos.update(todo.id!, todo);
+  }
+
+  delete(id: number): Promise<void> {
+    return this.db.todos.delete(id);
   }
 }
 

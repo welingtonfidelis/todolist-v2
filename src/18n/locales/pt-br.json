@@ -21,7 +21,15 @@
       "error_change_todo_message": "Houve um erro ao tentar salvar a tarefa. Por favor, tente novamente.",
       "hover_title_restart_todo": "Reiniciar tarefa",
       "hover_title_done_todo": "Finalizar tarefa",
-      "hover_title_doing_todo": "Iniciar tarefa"
+      "hover_title_doing_todo": "Iniciar tarefa",
+      "error_delete_todo_title": "Excluir tarefa",
+      "error_delete_todo_message": "Houve um erro ao tentar excluir a tarefa. Por favor, tente novamente.",
+      "menu_option_edit": "Editar tarefa",
+      "menu_option_delete": "Excluir tarefa",
+      "menu_option_delete_message": "Quer excluir esta tarefa?",
+      "menu_option_todo": "Marcar como 'À fazer'",
+      "menu_option_doing": "Marcar como 'Fazendo'",
+      "menu_option_done": "Marcar como 'Feito'"
     }
   },
   "pages": {
@@ -38,6 +46,8 @@
   },
   "generic": {
     "button_save": "Salvar",
-    "button_cancel": "Cancelar"
+    "button_cancel": "Cancelar",
+    "button_yes": "Sim",
+    "button_no": "Não"
   }
 }
