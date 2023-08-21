@@ -1,4 +1,4 @@
-import { Modal, Form, Radio } from "antd";
+import { Modal, Form, Radio, Select } from "antd";
 import moment from "moment";
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,7 @@ import {
   Container,
   DateTimeContainer,
 } from "./style";
+import FormItem from "antd/es/form/FormItem";
 
 interface Props {
   todoId: number | null;
@@ -61,7 +62,6 @@ export const ModalTodo = (props: Props) => {
     async (id: number) => {
       try {
         const { ok, data } = await findTodoById(id);
-        console.log('data: ', data);
 
         if (ok && data) {
           form.setFieldsValue({
@@ -99,6 +99,7 @@ export const ModalTodo = (props: Props) => {
 
   const handleSave = useCallback(async () => {
     const formData = await form.validateFields();
+
     try {
       formData.date = formData.date
         ? moment(new Date(formData.date)).utc().format()
@@ -106,10 +107,10 @@ export const ModalTodo = (props: Props) => {
       formData.time = formData.time
         ? moment(new Date(formData.time)).format()
         : "";
+      formData.status = formData.status ?? 'todo';
 
       if (formData.id) await updateTodo({ ...formData, id: +formData.id });
       else {
-        formData.status = "todo";
         await newTodo(formData);
       }
 
@@ -120,7 +121,7 @@ export const ModalTodo = (props: Props) => {
         description: t("components.modal_new_todo.error_save_todo_title"),
         message: t("components.modal_new_todo.error_save_todo_message"),
       });
-    }    
+    }
   }, [form, props, t]);
 
   return (
@@ -162,7 +163,7 @@ export const ModalTodo = (props: Props) => {
             >
               <Radio.Group>
                 {colorCardOptions.map((item) => (
-                  <ColorCardItem value={item} color={item} key={item}/>
+                  <ColorCardItem value={item} color={item} key={item} />
                 ))}
               </Radio.Group>
             </Form.Item>
@@ -184,6 +185,30 @@ export const ModalTodo = (props: Props) => {
               )}
             />
           </Form.Item>
+
+          <FormItem name="status">
+            <Select
+              size="large"
+              placeholder={t(
+                "components.modal_new_todo.input_status_placeholder"
+              )}
+              options={[
+                {
+                  value: "done",
+                  label: t("components.modal_new_todo.input_status_done"),
+                },
+                {
+                  value: "doing",
+                  label: t("components.modal_new_todo.input_status_doing"),
+                },
+                {
+                  value: "todo",
+                  label: t("components.modal_new_todo.input_status_todo"),
+                },
+              ]}
+              defaultValue="todo"
+            />
+          </FormItem>
 
           <DateTimeContainer>
             <Form.Item name="date">
