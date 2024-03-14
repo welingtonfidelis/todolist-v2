@@ -3,6 +3,7 @@ Projeto construido em React pra gerenciamento de tarefas.
 
 ## Apresentação
 
+[Screencast from 14-03-2024 08:44:37.webm](https://github.com/welingtonfidelis/todolist-v2/assets/26190703/4f2bea7c-5574-4654-87ee-b4a2c4676497)
 
 ## Requisitos
 - [Node.js] - Node.js na versão 18 ou superior;
