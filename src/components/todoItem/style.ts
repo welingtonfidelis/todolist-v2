@@ -33,6 +33,7 @@ export const Description = styled.span`
   font-weight: 500;
   flex: 1;
   white-space: pre-line;
+  word-break: break-word;
 `;
 
 export const DateTimeContent = styled.div<{hasExpiredDate: boolean}>`
